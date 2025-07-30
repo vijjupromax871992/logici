@@ -1,0 +1,219 @@
+/* General Styling */
+.privacy-container {
+    padding: 20px;
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.8;
+    max-width: 1000px;
+    margin: 50px auto;
+    background-color: #fefefe;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+    text-align: left; 
+  }
+  
+  /* Headings */
+  .privacy-heading {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #00264d;
+    margin-bottom: 20px;
+    text-align: left; 
+    animation: slideInDown 0.8s ease-in-out;
+  }
+  
+  .privacy-date {
+    font-size: 1.2rem;
+    color: #555;
+    text-align: left; 
+    margin-bottom: 30px;
+    animation: fadeIn 1.2s ease-in-out;
+  }
+  
+  /* Sections */
+  .privacy-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #ffffff;
+    border-left: 6px solid #0056b3;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 1s ease-in-out;
+  }
+  
+  .privacy-section:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Subheadings */
+  .privacy-subheading {
+    font-size: 2rem;
+    color: #00264d;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #0056b3;
+    padding-bottom: 5px;
+    animation: slideInLeft 0.8s ease-in-out;
+  }
+  
+  .privacy-smallheading {
+    font-size: 1.5rem;
+    color: #003366;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    animation: slideInRight 0.8s ease-in-out;
+  }
+  
+  /* Text Content */
+  .privacy-section p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .privacy-section ul {
+    margin-left: 20px;
+    padding-left: 10px;
+    animation: fadeInUp 1.2s ease-in-out;
+  }
+  
+  .privacy-section ul li {
+    margin-bottom: 10px;
+    color: #444;
+    list-style-type: disc;
+  }
+  
+  /* Links */
+  a {
+    color: #0056b3;
+    text-decoration: none;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+  }
+  
+  a:hover {
+    color: #003366;
+    border-bottom: 1px solid #003366;
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      transform: translateX(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Accessibility Features */
+  .privacy-container:focus-within {
+    outline: 3px dashed #0056b3;
+    outline-offset: 10px;
+  }
+  
+  .privacy-section:focus-within {
+    outline: 2px dashed #003366;
+  }
+  
+  @media (max-width: 1024px) {
+    .privacy-container {
+      padding: 15px;
+    }
+    .privacy-heading {
+      font-size: 2.8rem;
+    }
+    .privacy-subheading {
+      font-size: 1.8rem;
+    }
+    .privacy-smallheading {
+      font-size: 1.4rem;
+    }
+    .privacy-section {
+      padding: 15px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .privacy-container {
+      padding: 10px;
+    }
+    .privacy-heading {
+      font-size: 2.5rem;
+    }
+    .privacy-subheading {
+      font-size: 1.6rem;
+    }
+    .privacy-smallheading {
+      font-size: 1.3rem;
+    }
+    .privacy-section {
+      padding: 10px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .privacy-container {
+      padding: 8px;
+    }
+    .privacy-heading {
+      font-size: 2.2rem;
+    }
+    .privacy-subheading {
+      font-size: 1.4rem;
+    }
+    .privacy-smallheading {
+      font-size: 1.2rem;
+    }
+    .privacy-section {
+      padding: 8px;
+    }
+    .privacy-section p,
+    .privacy-section ul li {
+      font-size: 0.9rem;
+    }
+  }

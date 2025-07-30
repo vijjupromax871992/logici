@@ -1,0 +1,227 @@
+/* // src/components/WarehouseSolution/ws-contact-form/ws-contact-form.css */
+.ws-contact-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    margin-bottom: 20px !important;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .ws-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    color: #333;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .ws-close-button:hover {
+    color: #ff6f61;
+  }
+  .ws-contact-form h2 {
+    color: #00264d;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-align: center;
+  }
+  
+  .ws-form-group {
+    display: flex;
+  align-items: center;
+  gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .ws-form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .ws-contact-form input,
+  .ws-contact-form select,
+  .ws-contact-form textarea {
+    flex: 1;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .ws-contact-form textarea {
+    resize: vertical;
+  }
+  
+  .ws-contact-form .ws-input-error {
+    border-color: #e74c3c;
+  }
+  
+  .ws-error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 0px;
+  }
+  
+  .ws-submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+    font-family: 'Montserrat', sans-serif;
+    color: #fff;
+    background-color: #00264d;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .ws-submit-btn:hover {
+    background-color: #001a33;
+  }
+  
+  .ws-thank-you-message {
+    text-align: center;
+  }
+  
+  .ws-thank-you-message h2 {
+    font-family: 'Montserrat', sans-serif;
+    color: #00264d;
+  }
+  
+  .ws-thank-you-message p {
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .ws-form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+  }
+  
+  .ws-contact-form input[type="file"] {
+    padding: 5px;
+  }
+  
+  .ws-form-group select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  
+  .ws-privacy-assurance {
+    font-size: 0.85rem;
+    color: #333;
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  /* Hover Effects for Interactive Fields */
+  .ws-contact-form input:hover,
+  .ws-contact-form select:hover,
+  .ws-contact-form textarea:hover {
+    border-color: #005488;
+  }
+  
+  /* Checkbox and File Input Spacing */
+  .ws-form-group input[type="checkbox"],
+  .ws-form-group input[type="file"] {
+    margin-top: 5px;
+  }
+
+  .ws-checkbox-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Creates 2 equal-width columns */
+    text-align: left;
+    column-gap: 40px;
+  }
+  
+  .ws-checkbox-group label {
+    font-size: 0.9rem; /* Adjust font size for compact look */
+    margin: 0; /* Remove default margin */
+    padding: 0;
+  }
+
+  /* CTA Button Style */
+  .ws-submit-btn {
+    background-color: #00264d;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .ws-submit-btn:hover {
+    background-color: #001a33;
+  }
+  
+  @media (max-width: 768px) { /* Tablet */
+    .ws-contact-form-container {
+      max-width: 90%;
+      padding: 15px;
+    }
+  
+    .ws-close-button {
+      font-size: 1.2rem;
+    }
+  
+    .ws-contact-form h2 {
+      font-size: 1.5em;
+    }
+  
+    .ws-form-group label {
+      font-size: 0.85rem;
+    }
+  
+    .ws-contact-form input,
+    .ws-contact-form select,
+    .ws-contact-form textarea {
+      font-size: 0.95rem;
+    }
+  
+    .ws-submit-btn {
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) { /* Mobile */
+    .ws-contact-form-container {
+      max-width: 100%;
+      padding: 10px;
+    }
+  
+    .ws-contact-form h2 {
+      font-size: 1.2em;
+    }
+  
+    .ws-form-group label {
+      font-size: 0.8rem;
+    }
+  
+    .ws-contact-form input,
+    .ws-contact-form select,
+    .ws-contact-form textarea {
+      font-size: 0.85rem;
+    }
+  
+    .ws-submit-btn {
+      font-size: 0.9rem;
+      padding: 10px;
+    }
+  }

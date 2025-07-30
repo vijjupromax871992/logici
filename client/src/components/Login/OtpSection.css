@@ -1,0 +1,434 @@
+/* OtpSection.css */
+:root {
+    --primary-color: #4a90e2;
+    --primary-hover: #357ab7;
+    --bg-color: #f9f9f9;
+    --text-color: #333;
+    --error-color: #ff4d4d;
+    --success-color: #28a745;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+  }
+  
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg-color);
+    margin: 0;
+    padding: 0;
+  }
+  
+  .otp-section {
+    max-width: 620px;
+    margin: 60px auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    text-align: center;
+    position: relative;
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  .otp-section h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 20px;
+  }
+  
+  .select-container select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .select-container select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px var(--shadow-color);
+  }
+  
+  .input-field {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .input-field input {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+  }
+  
+  .input-field input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  
+  .input-field button {
+    padding: 14px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: #4a90e2;
+    color: white;
+    font-weight: 500;
+    width: 35%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+  }
+  
+  .input-field button:hover {
+    background-color: #357ab7;
+  }
+
+  
+  .primary-button {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .primary-button:hover {
+    background: var(--primary-hover);
+    transform: scale(1.05);
+  }
+  
+  .primary-button.loading {
+    background: #aaa;
+    cursor: not-allowed;
+  }
+  
+  .otp-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 25px;
+  }
+  
+  .otp-input {
+    width: 35px !important;
+    padding: 0px;
+    height: 55px;
+    font-size: 1.6rem;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #f3f3f3;
+  }
+  
+  .otp-input:focus {
+    border-color: var(--primary-color);
+    background: #fff;
+    box-shadow: 0 0 12px var(--shadow-color);
+  }
+  
+  .otp-input.error {
+    border-color: var(--error-color);
+    animation: shake 0.3s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+  }
+  
+  .button-container {
+    margin-top: 30px;
+  }
+  
+  .resend-button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 12px;
+  }
+  
+  .resend-button:hover {
+    text-decoration: underline;
+  }
+  
+  .timer {
+    margin-top: 12px;
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    color: #888;
+    transition: all 0.3s ease;
+  }
+  
+  .close-btn:hover {
+    color: var(--error-color);
+    transform: rotate(90deg);
+  }
+  
+  .error-message {
+    color: var(--error-color);
+    margin-top: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .success-animation {
+    animation: scaleUp 0.5s ease-in-out forwards;
+  }
+  
+  @keyframes scaleUp {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .otp-section {
+      padding: 30px;
+    }
+  
+    .otp-input {
+      width: 45px;
+      height: 45px;
+      font-size: 1.4rem;
+    }
+  
+    .primary-button {
+      font-size: 0.9rem;
+    }
+  
+    .input-field input {
+      font-size: 0.9rem;
+    }
+
+    .input-field {
+        flex-direction: column;
+      }
+      
+      .input-field button {
+        width: 100%;
+      }
+  }
+  
+  /* Keep all existing styles until media queries */
+/* ... (previous styles remain the same) ... */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .otp-section {
+    max-width: 380px;
+    padding: 35px;
+    margin: 40px auto;
+  }
+
+  .otp-section h2 {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .otp-input {
+    width: 50px;
+    height: 50px;
+    font-size: 1.4rem;
+  }
+
+  .input-field input {
+    padding: 12px;
+  }
+
+  .input-field button {
+    padding: 12px;
+  }
+
+  .primary-button {
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .otp-section {
+    max-width: 100%;
+    padding: 30px 20px;
+    margin: 20px auto;
+    border-radius: 12px;
+  }
+
+  .otp-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .otp-container {
+    gap: 8px;
+  }
+
+  .otp-input {
+    width: 45px;
+    height: 45px;
+    font-size: 1.3rem;
+  }
+
+  .input-field {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .input-field input {
+    width: 100%;
+  }
+
+  .input-field button {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .close-btn {
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+  }
+
+  .primary-button {
+    width: 100%;
+    padding: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .otp-section {
+    padding: 25px 15px;
+  }
+
+  .otp-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .otp-container {
+    gap: 6px;
+  }
+
+  .otp-input {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .input-field input,
+  .input-field button {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .timer,
+  .resend-button {
+    font-size: 0.9rem;
+  }
+
+  .error-message {
+    font-size: 0.9rem;
+    margin-top: 15px;
+  }
+}
+
+/* Handle height-based queries */
+@media (max-height: 700px) {
+  .otp-section {
+    margin: 20px auto;
+    padding: 25px;
+  }
+
+  .otp-container {
+    margin-top: 20px;
+  }
+
+  .button-container {
+    margin-top: 20px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1a202c;
+    --text-color: #e2e8f0;
+    --primary-color: #63b3ed;
+    --primary-hover: #4299e1;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .otp-section {
+    background: #2d3748;
+  }
+
+  .otp-input {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .input-field input {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .select-container select {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #e2e8f0;
+  }
+
+  .close-btn {
+    color: #a0aec0;
+  }
+
+  .close-btn:hover {
+    color: #fc8181;
+  }
+
+  .timer {
+    color: #a0aec0;
+  }
+}
+
+/* Animation adjustments for mobile */
+@media (prefers-reduced-motion: reduce) {
+  .otp-section,
+  .primary-button:hover,
+  .close-btn:hover,
+  .otp-input.error {
+    animation: none;
+    transform: none;
+  }
+}

@@ -1,0 +1,79 @@
+.SearchBar-search-bar-container {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .SearchBar-search-bar-form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    width: 100%;
+    margin-bottom: 0px;
+  }
+  .SearchBar-search-icon{
+    display:block !important;
+  }
+  
+  .SearchBar-search-input {
+    width: 80%;
+    margin: 0px;
+    font-size: 1.2em;
+    border-radius: 25px;
+    border: 2px solid #ccc;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  .SearchBar-search-input:focus {
+    border-color: #00599c;
+  }
+  
+  .SearchBar-search-icon {
+    background-color: #00599c;
+    color: white;
+    border: none;
+    padding: 10px;  
+    border-radius: 50%;
+    margin-left: 10px;
+    margin-top: -10px !important;
+    cursor: pointer;
+    font-size: 0.5em;
+  }
+  
+  .SearchBar-search-icon:hover {
+    background-color: #004b8c;
+  }
+  .SearchBar-suggestions-list {
+    list-style-type: none;
+    padding: 0;
+    position: absolute;
+    top: 100%; 
+    margin-top: 0px;
+    width: 80%;  
+    max-height: 200px;
+    overflow-y: auto; 
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 5px;
+    z-index: 10;
+  }
+  
+  .SearchBar-suggestion-item {
+    padding: 0px;
+    cursor: pointer;
+  }
+  
+  .SearchBar-suggestion-item:hover {
+    background-color: #f0f0f0;
+  }
+  .SearchBar-search-text {
+    margin-top: 10px;
+    padding: 15px;
+    font-size: 1.5em;
+    color: #666;
+  }
+  
+  
