@@ -1,0 +1,93 @@
+server {
+    server_name logic-i.com www.logic-i.com 89.116.122.199;
+    
+    # Frontend - Serve React build files
+    location / {
+        root /var/www/logic-i/client/dist;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+        
+        # Cache static assets
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+        }
+    }
+    
+    # Backend OAuth routes (these should go to backend)
+    location ~ ^/auth/(google|login|logout|send-otp|verify-otp|forgot-password|reset-password|register) {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 86400;
+    }
+    
+    # Frontend OAuth callback (this should go to React app)
+    location /auth/success {
+        root /var/www/logic-i/client/dist;
+        try_files $uri $uri/ /index.html;
+    }
+    
+    # Backend API routes (specific paths only, not general /admin pages)
+    location ~ ^/(api|health|users|warehouses|bookings|inquiries|payments|roles|permissions|inquiry-types|analytics|me)(/.*)?$ {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 86400;
+    }
+    
+    # Backend admin API routes (specific admin API endpoints only)
+    location ~ ^/admin/(analytics|admin-users|warehouses|bookings|create-admin)(/.*)?$ {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 86400;
+    }
+    
+    # Handle file uploads
+    location /uploads {
+        alias /var/www/logic-i/server/uploads;
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Methods "GET, OPTIONS";
+        add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range";
+        try_files $uri $uri/ =404;
+    }
+    
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/logic-i.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/logic-i.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+}
+
+server {
+    if ($host = www.logic-i.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+    if ($host = logic-i.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+    listen 80;
+    server_name logic-i.com www.logic-i.com 89.116.122.199;
+    return 404; # managed by Certbot
+}
