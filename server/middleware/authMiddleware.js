@@ -10,6 +10,16 @@ function verifyAccessToken(req, res, next) {
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       console.log('❌ [Auth] Token missing or malformed - no Bearer header');
+      
+      // Check if this is a browser request (has Accept header for HTML)
+      const acceptHeader = req.headers.accept || '';
+      const isBrowserRequest = acceptHeader.includes('text/html');
+      
+      if (isBrowserRequest) {
+        console.log('🔄 [Auth] Browser request detected - redirecting to homepage');
+        return res.redirect('/');
+      }
+      
       return res.status(401).json({ 
         success: false, 
         message: 'Token missing or malformed' 
@@ -35,6 +45,16 @@ function verifyAccessToken(req, res, next) {
     next();
   } catch (error) {
     console.error('❌ [Auth] Token verification failed:', error.message);
+    
+    // Check if this is a browser request (has Accept header for HTML)
+    const acceptHeader = req.headers.accept || '';
+    const isBrowserRequest = acceptHeader.includes('text/html');
+    
+    if (isBrowserRequest) {
+      console.log('🔄 [Auth] Browser request detected - redirecting to homepage');
+      return res.redirect('/');
+    }
+    
     return res.status(403).json({ 
       success: false, 
       message: 'Invalid or expired token',
@@ -49,6 +69,13 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
+    // Check if this is a browser request
+    const acceptHeader = req.headers.accept || '';
+    const isBrowserRequest = acceptHeader.includes('text/html');
+    
+    if (isBrowserRequest) {
+      return res.redirect('/');
+    }
     return res.status(401).json({ error: 'Access token required' });
   }
 
@@ -58,6 +85,13 @@ function authenticateToken(req, res, next) {
     req.isAdmin = decoded.isAdmin; // Add isAdmin to request
     next();
   } catch (error) {
+    // Check if this is a browser request
+    const acceptHeader = req.headers.accept || '';
+    const isBrowserRequest = acceptHeader.includes('text/html');
+    
+    if (isBrowserRequest) {
+      return res.redirect('/');
+    }
     return res.status(403).json({ error: 'Invalid token' });
   }
 }

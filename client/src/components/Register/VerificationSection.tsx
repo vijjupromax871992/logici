@@ -171,7 +171,22 @@ const VerificationSection: React.FC<VerificationSectionProps> = ({ registerData,
       if (response.ok) {
         localStorage.setItem('token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
-        window.location.href = '/dashboard';
+        
+        // Check if there's a stored redirect URL
+        const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+        if (redirectUrl) {
+          // Clear the stored URL and redirect there
+          sessionStorage.removeItem('redirectAfterLogin');
+          window.location.href = redirectUrl;
+        } else {
+          // Default behavior - check if user is admin or regular user
+          const user = data.data.user;
+          if (user.isAdmin) {
+            window.location.href = '/admin/dashboard';
+          } else {
+            window.location.href = '/user/dashboard';
+          }
+        }
       } else {
         throw new Error(data.error || 'Registration failed');
       }

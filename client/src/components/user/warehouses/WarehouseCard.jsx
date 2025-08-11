@@ -21,7 +21,9 @@ const WarehouseCard = ({ warehouse, onRefresh }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('No authentication token found');
+        // Redirect to homepage if no token
+        window.location.href = '/';
+        return;
       }
   
       const response = await fetch(
@@ -39,6 +41,13 @@ const WarehouseCard = ({ warehouse, onRefresh }) => {
       const responseData = await response.json().catch(e => ({ error: 'Could not parse response', e }));
   
       if (!response.ok) {
+        // Handle token-related errors by redirecting to homepage
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          window.location.href = '/';
+          return;
+        }
         throw new Error(`Failed to delete warehouse: ${responseData.message || response.status}`);
       }
   

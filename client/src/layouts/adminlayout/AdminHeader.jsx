@@ -20,7 +20,7 @@ const AdminHeader = () => {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        navigate('/admin/login');
+        navigate('/');
         return;
       }
 
@@ -34,8 +34,9 @@ const AdminHeader = () => {
       if (!response.ok) {
         if (response.status === 401) {
           localStorage.removeItem('token');
+          localStorage.removeItem('auth_token');
           localStorage.removeItem('user');
-          navigate('/admin/login');
+          navigate('/');
           return;
         }
         throw new Error('Failed to fetch admin data');
@@ -68,6 +69,7 @@ const AdminHeader = () => {
     } catch (error) {
     } finally {
       localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('user');
       navigate('/');
     }

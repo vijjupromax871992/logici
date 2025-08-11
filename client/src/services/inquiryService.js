@@ -2,14 +2,14 @@
 import axios from 'axios';
 import { BACKEND_URL } from '../config/api';
 
-const API_URL = `${BACKEND_URL}/api`;
+const API_URL = BACKEND_URL;
 
 class InquiryService {
   // Get inquiries allocated to the partner
   async getPartnerInquiries() {
     try {
       // Use the correct endpoint from your backend
-      const response = await axios.get(`${API_URL}/partner/inquiries`, {
+      const response = await axios.get(`${API_URL}/api/partner/inquiries`, {
         headers: this.getAuthHeaders()
       });
       return response.data;
@@ -22,7 +22,7 @@ class InquiryService {
   // Get unallocated inquiries
   async getUnallocatedInquiries() {
     try {
-      const response = await axios.get(`${API_URL}/partner/inquiries/unallocated`, {
+      const response = await axios.get(`${API_URL}/api/partner/inquiries/unallocated`, {
         headers: this.getAuthHeaders()
       });
       return response.data;
@@ -35,7 +35,7 @@ class InquiryService {
   async updateInquiryStatus(inquiryId, newStatus) {
     try {
       const response = await axios.put(
-        `${API_URL}/partner/inquiries/${inquiryId}/status`,
+        `${API_URL}/api/partner/inquiries/${inquiryId}/status`,
         { status: newStatus },
         { headers: this.getAuthHeaders() }
       );

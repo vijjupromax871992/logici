@@ -1,5 +1,5 @@
 // controllers/adminController.js - FIXED FOR MISSING TABLES AND ASSOCIATIONS
-const { User, Warehouse, Booking, ConfirmedBooking, Payment, WarehouseApproval, ActivityLog, WarehouseAnalytics } = require('../models');
+const { User, Warehouse, Booking, ConfirmedBooking, Payment, WarehouseApproval, ActivityLog, WarehouseAnalytics, Inquiry } = require('../models');
 const { Op } = require('sequelize');
 const sequelize = require('../config/database');
 const bcrypt = require('bcrypt');
@@ -8,10 +8,21 @@ const adminUserService = require('../auth/services/adminUserService');
 exports.getDashboardAnalytics = async (req, res) => {
     try {
         let totalConfirmedBookings = 0;
+        let totalInquiries = 0;
+        let pendingInquiries = 0;
         
         // Try to get confirmed bookings count if table exists
         try {
             totalConfirmedBookings = await ConfirmedBooking.count();
+        } catch (error) {
+        }
+
+        // Try to get inquiries count if table exists
+        try {
+            totalInquiries = await Inquiry.count();
+            pendingInquiries = await Inquiry.count({ 
+                where: { allocation_status: ['unallocated', 'pending'] } 
+            });
         } catch (error) {
         }
 
@@ -30,11 +41,47 @@ exports.getDashboardAnalytics = async (req, res) => {
                 totalBookings: totalBookingInquiries + totalConfirmedBookings,
                 totalBookingInquiries,
                 totalConfirmedBookings,
-                pendingApprovals
+                pendingApprovals,
+                totalInquiries,
+                pendingInquiries
             }
         });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error fetching dashboard analytics' });
+    }
+};
+
+exports.getAllWarehouses = async (req, res) => {
+    try {
+        const { page = 1, limit = 10, status } = req.query;
+        const offset = (page - 1) * limit;
+
+        const whereClause = {};
+        if (status) {
+            whereClause.approval_status = status;
+        }
+
+        const warehouses = await Warehouse.findAndCountAll({
+            where: whereClause,
+            include: [{
+                model: User,
+                as: 'owner',
+                attributes: ['firstName', 'lastName', 'email']
+            }],
+            limit: parseInt(limit),
+            offset: parseInt(offset),
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.json({ 
+            success: true, 
+            data: warehouses.rows,
+            total: warehouses.count,
+            totalPages: Math.ceil(warehouses.count / limit),
+            currentPage: parseInt(page)
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching warehouses' });
     }
 };
 

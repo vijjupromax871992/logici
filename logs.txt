@@ -1,6 +1,6 @@
 # LOGIC-I.COM PROJECT DOCUMENTATION
 Generated on: 2025-07-29
-Last Updated: 2025-07-29 - Google OAuth Debug Implementation
+Last Updated: 2025-08-08 - Admin Route Issue Fix Implementation
 Project Type: Warehouse Management Platform
 
 ## PROJECT OVERVIEW
@@ -2248,3 +2248,74 @@ The warehouse details page at https://logic-i.com/warehouse-details/[id] needed 
 - Consistent design language with existing Logic-I responsive patterns
 
 The warehouse details page now provides an optimal viewing experience across all device sizes, with particular attention to mobile users who represent a significant portion of warehouse browsing traffic.
+
+## Admin Warehouse View Fix - Fri Aug  8 05:42:49 UTC 2025
+
+**Issue:** When clicking 'View' button on admin warehouses page, users were being redirected to the public warehouse details page instead of opening the admin modal.
+
+**Root Cause Analysis:**
+1. Identified routing conflicts between public warehouse routes (/warehouse/:id and /warehouse-details/:id) and admin modal behavior
+2. Found potential event propagation issues and missing event handling safeguards
+3. Modal component needed better conditional rendering and event handling
+
+**Solution Implemented:**
+
+**Enhanced Event Handling in AdminWarehouses.jsx:**
+- Added comprehensive event prevention: preventDefault(), stopPropagation(), stopImmediatePropagation()
+- Enhanced View button handler with explicit event parameter handling
+- Improved table row click protection to prevent interference with button clicks
+- Added wrapper div around modal for better rendering isolation
+
+**Improved Modal Behavior in AdminWarehouseDetailModal.jsx:**
+- Increased modal z-index to 9999 to ensure proper layering
+- Enhanced backdrop click handling with event prevention
+- Improved modal content click event handling to prevent propagation
+- Added event prevention to all close buttons (X button and footer Close button)
+
+**Technical Implementation:**
+```javascript
+// Enhanced View button click handler
+onClick={(e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
+  handleViewWarehouse(warehouse, e);
+}}
+
+// Improved modal backdrop handling
+style={{ zIndex: 9999 }}
+onClick={(e) => {
+  if (e.target === e.currentTarget) {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+  }
+}}
+```
+
+**Files Modified:**
+- client/src/components/admin/warehouses/AdminWarehouses.jsx: Enhanced event handling and button specificity
+- client/src/components/admin/warehouses/AdminWarehouseDetailModal.jsx: Improved modal z-index and event propagation
+
+**Build Status:** Frontend successfully built and deployed with all fixes applied
+
+**Result:** Admin warehouse View button now properly opens modal within admin context instead of navigating to public warehouse route. The issue was resolved through comprehensive event handling improvements and modal behavior enhancements.
+
+**CRITICAL FIX - stopImmediatePropagation Error:**
+Error encountered: `Uncaught TypeError: z.stopImmediatePropagation is not a function`
+
+**Root Cause:** The `stopImmediatePropagation()` method is not available on all event types or synthetic events in React.
+
+**Solution Applied:**
+- Removed all `stopImmediatePropagation()` calls from AdminWarehouses.jsx
+- Replaced with standard `preventDefault()` and `stopPropagation()` which are universally supported
+- Updated both button click handler and table row click protection
+- Applied same fix to AdminWarehouseDetailModal.jsx modal content handler
+
+**Files Updated:**
+- client/src/components/admin/warehouses/AdminWarehouses.jsx: Removed problematic stopImmediatePropagation calls
+- client/src/components/admin/warehouses/AdminWarehouseDetailModal.jsx: Applied same fix to modal handlers
+
+**Build Status:** Frontend successfully rebuilt and deployed - View button now functional without errors.
+
+

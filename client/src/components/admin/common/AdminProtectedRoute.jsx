@@ -9,10 +9,16 @@ const AdminProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     const checkAdminStatus = () => {
-      const token = localStorage.getItem('token');
+      // Check multiple token storage locations
+      const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
       const userStr = localStorage.getItem('user');
 
       if (!token || !userStr) {
+        console.log('🔄 [AdminProtectedRoute] No token or user data found');
+        // Clear any remaining auth data
+        localStorage.removeItem('token');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user');
         setIsAdmin(false);
         setLoading(false);
         return;
@@ -21,8 +27,16 @@ const AdminProtectedRoute = ({ children }) => {
       try {
         const userData = JSON.parse(userStr);
         
-        setIsAdmin(userData.isAdmin);
+        if (userData.isAdmin) {
+          setIsAdmin(true);
+        } else {
+          console.log('🔄 [AdminProtectedRoute] User is not admin');
+          setIsAdmin(false);
+        }
       } catch (error) {
+        console.error('🔄 [AdminProtectedRoute] Error parsing user data:', error);
+        // Clear invalid user data
+        localStorage.removeItem('user');
         setIsAdmin(false);
       } finally {
         setLoading(false);

@@ -8,6 +8,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'All Warehouses', href: '/admin/warehouses', icon: Building2 },
   { name: 'Pending Warehouses', href: '/admin/warehouses/pending', icon: Building2 },
   { name: 'Profile', href: '/admin/profile', icon: User },
   { name: 'Inquiries', href: '/admin/inquiries', icon: MessageSquare },

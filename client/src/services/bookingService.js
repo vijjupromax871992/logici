@@ -3,8 +3,9 @@ import { BACKEND_URL } from '../config/api';
 
 // Get auth token from localStorage with multiple fallbacks
 const getAuthToken = () => {
-  return localStorage.getItem('authToken') || 
-         localStorage.getItem('token') || 
+  return localStorage.getItem('token') || 
+         localStorage.getItem('auth_token') ||
+         localStorage.getItem('authToken') || 
          localStorage.getItem('accessToken') ||
          localStorage.getItem('jwt');
 };
@@ -27,15 +28,17 @@ const getAuthHeaders = () => {
 // Enhanced error handling
 const handleResponse = async (response) => {
   if (!response.ok) {
-    if (response.status === 401) {
-      // Clear invalid token
+    if (response.status === 401 || response.status === 403) {
+      // Clear all possible token storage locations
       localStorage.removeItem('authToken');
       localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       localStorage.removeItem('accessToken');
       localStorage.removeItem('jwt');
+      localStorage.removeItem('user');
       
-      // Redirect to login (adjust path as needed)
-      window.location.href = '/login';
+      // Redirect to homepage instead of login
+      window.location.href = '/';
       throw new Error('Authentication required');
     }
     

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { BACKEND_URL } from '../config/api';
 
 const AuthContext = createContext(undefined);
@@ -19,11 +20,44 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Check authentication status on mount
+  // Setup axios interceptors and check authentication status on mount
   useEffect(() => {
+    // Setup axios interceptors for automatic token handling
+    const setupAxiosInterceptors = () => {
+      // Request interceptor to add token to all requests
+      const requestInterceptor = axios.interceptors.request.use(
+        (config) => {
+          const storedToken = localStorage.getItem('token') || localStorage.getItem('auth_token');
+          if (storedToken) {
+            config.headers.Authorization = `Bearer ${storedToken}`;
+          }
+          return config;
+        },
+        (error) => Promise.reject(error)
+      );
+
+      // Response interceptor to handle token errors globally
+      const responseInterceptor = axios.interceptors.response.use(
+        (response) => response,
+        (error) => {
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            console.log('🔄 [Auth] Token error detected, logging out...');
+            handleLogout();
+          }
+          return Promise.reject(error);
+        }
+      );
+
+      // Return cleanup function
+      return () => {
+        axios.interceptors.request.eject(requestInterceptor);
+        axios.interceptors.response.eject(responseInterceptor);
+      };
+    };
+
     const checkAuth = async () => {
       try {
-        const storedToken = localStorage.getItem('auth_token');
+        const storedToken = localStorage.getItem('auth_token') || localStorage.getItem('token');
         if (storedToken) {
           // Fetch user details using the /me endpoint
           const response = await fetch(`${BACKEND_URL}/me`, {
@@ -55,13 +89,18 @@ export const AuthProvider = ({ children }) => {
           }
         }
       } catch (error) {
+        console.error('Auth check failed:', error);
         handleLogout();
       } finally {
         setLoading(false);
       }
     };
 
+    const cleanupInterceptors = setupAxiosInterceptors();
     checkAuth();
+
+    // Cleanup interceptors on unmount
+    return cleanupInterceptors;
   }, []);
 
   const handleLogin = async (credentials) => {
@@ -109,11 +148,16 @@ export const AuthProvider = ({ children }) => {
         });
       }
     } catch (error) {
+      console.error('Logout error:', error);
     } finally {
+      // Clear all possible token storage locations
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
       setToken(null);
       setUser(null);
-      navigate('/login');
+      // Redirect to homepage instead of login
+      navigate('/');
     }
   };
 

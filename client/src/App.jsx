@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar/Navbar';
@@ -46,6 +47,7 @@ import AdminLogin from './components/admin/login/AdminLogin';
 import AdminDashboard from './components/admin/dashboard/AdminDashboard';
 import AdminUserPanel from './components/admin/AdminUsers/AdminUserPanel';
 import PendingWarehouses from './components/admin/warehouses/PendingWarehouses';
+import AdminWarehouses from './components/admin/warehouses/AdminWarehouses';
 import AdminProtectedRoute from './components/admin/common/AdminProtectedRoute';
 import CreateAdmin from './components/admin/createAdmin/createAdmin';
 import ManageUsers from './components/admin/manageUsers/ManageUsers';
@@ -56,10 +58,18 @@ import PaymentSuccess from './components/Payment/PaymentSuccess';
 import PaymentFailure from './components/Payment/PaymentFailure';
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token') || localStorage.getItem('auth_token');
+  const location = useLocation();
 
   if (!token) {
-    return <Navigate to="/" replace />;
+    // Clear any remaining auth data
+    localStorage.removeItem('token');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user');
+    
+    // Store the intended destination URL
+    sessionStorage.setItem('redirectAfterLogin', location.pathname + location.search);
+    return <Navigate to="/?showLogin=true" replace />;
   }
 
   return children;
@@ -98,6 +108,16 @@ function App() {
               />
               <Route
                 path="/warehouse-details/:id"
+                element={
+                  <>
+                    <Navbar />
+                     <WarehouseDetails/>
+                    <Footer />
+                  </>
+                }
+              />
+              <Route
+                path="/warehouse/:id"
                 element={
                   <>
                     <Navbar />
@@ -166,7 +186,7 @@ function App() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="admin-users" element={<AdminUserPanel />} />
                 <Route path="warehouses">
-                  <Route index element={<Navigate to="pending" replace />} />
+                  <Route index element={<AdminWarehouses />} />
                   <Route path="pending" element={<PendingWarehouses />} />
                 </Route>
                 <Route path="inquiries" element={<AdminInquiries />} />

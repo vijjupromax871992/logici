@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SearchBar, StatusFilter } from './components';
+import { StatusFilter } from './components';
 import WarehouseCard from './WarehouseCard';
 import { BACKEND_URL } from '../../../config/api';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -14,7 +14,6 @@ const WarehouseList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchWarehouses = useCallback(async () => {
     try {
@@ -53,23 +52,8 @@ const WarehouseList = () => {
       );
     }
 
-    // Apply search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(warehouse =>
-        warehouse.name.toLowerCase().includes(query) ||
-        warehouse.city.toLowerCase().includes(query) ||
-        warehouse.state.toLowerCase().includes(query) ||
-        warehouse.warehouse_type.toLowerCase().includes(query)
-      );
-    }
-
     setFilteredWarehouses(result);
-  }, [warehouses, filter, searchQuery]);
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-  };
+  }, [warehouses, filter]);
 
   const handleFilterChange = (status) => {
     setFilter(status);
@@ -107,7 +91,6 @@ const WarehouseList = () => {
           boxShadow: theme.cardShadow
         }}
       >
-        <SearchBar onSearch={handleSearch} />
         <StatusFilter onFilterChange={handleFilterChange} />
       </div>
 

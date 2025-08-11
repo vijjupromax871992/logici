@@ -12,6 +12,7 @@ router.use(verifyAccessToken, isAdmin);
 router.get('/analytics/dashboard', adminController.getDashboardAnalytics);
 
 // Warehouse Management
+router.get('/warehouses', adminController.getAllWarehouses);
 router.get('/warehouses/pending', adminController.getPendingWarehouses);
 router.post('/warehouses/approve/:id', adminController.approveWarehouse);
 router.post('/warehouses/reject/:id', adminController.rejectWarehouse);

@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic-i - Elite High Level System Design Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .legend {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .section {
+            background: white;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #764ba2;
+        }
+        
+        h3 {
+            color: #444;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.6rem;
+        }
+        
+        h4 {
+            color: #555;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+        
+        .toc {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: #667eea;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .toc ol {
+            list-style: decimal;
+            padding-left: 2rem;
+            columns: 2;
+            column-gap: 3rem;
+        }
+        
+        .toc li {
+            margin: 0.8rem 0;
+            font-size: 1.1rem;
+            break-inside: avoid;
+        }
+        
+        .toc a {
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .toc a:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .visual-diagram {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .tier-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .tier-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            min-width: 200px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .tier-arrow {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .diagram {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            border: 2px solid #dee2e6;
+            font-size: 14px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .architecture-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .architecture-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .architecture-card h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            background: #667eea;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .flow-step {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .security-layer {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .journey-flow {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 10px;
+            border-left: 5px solid #9c27b0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .api-route {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        
+        .tech-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .tech-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-implemented {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+        
+        .status-progress {
+            background: #fff3cd;
+            color: #f57c00;
+        }
+        
+        .status-planned {
+            background: #e1f5fe;
+            color: #0277bd;
+        }
+        
+        .scalability-note {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #e91e63;
+            margin: 2rem 0;
+        }
+        
+        ul {
+            padding-left: 2rem;
+            margin: 1rem 0;
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid #ffa000;
+            margin: 1.5rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .diagram {
+                font-size: 12px;
+                padding: 1rem;
+            }
+            
+            .toc ol {
+                columns: 1;
+            }
+            
+            .tier-container {
+                flex-direction: column;
+            }
+            
+            .tier-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Logic-i Platform</h1>
+            <p class="subtitle">Elite High Level System Design Documentation</p>
+        </header>
+
+        <div class="legend">
+            <h3>🎨 Documentation Legend & Color Coding</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #667eea;"></div>
+                    <span>Frontend Layer</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #764ba2;"></div>
+                    <span>Backend Layer</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2196f3;"></div>
+                    <span>Database Layer</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4caf50;"></div>
+                    <span>External APIs</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff9800;"></div>
+                    <span>Security Layer</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9c27b0;"></div>
+                    <span>User Flows</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section toc">
+            <h3>📋 Table of Contents</h3>
+            <ol>
+                <li><a href="#visual-architecture">Visual 3-Tier Architecture Diagram</a></li>
+                <li><a href="#detailed-architecture">Detailed System Architecture</a></li>
+                <li><a href="#auth-flows">Authentication Flow Breakdowns</a></li>
+                <li><a href="#booking-inquiry">Booking vs Inquiry Flows</a></li>
+                <li><a href="#admin-actions">Admin Role Actions & Permissions</a></li>
+                <li><a href="#component-tree">React Component Tree Structure</a></li>
+                <li><a href="#service-layer">Service Layer & Modular Logic</a></li>
+                <li><a href="#security-hld">Security High Level Design</a></li>
+                <li><a href="#deployment-flow">Deployment Infrastructure Flow</a></li>
+                <li><a href="#data-flow-examples">Real Data Flow Examples</a></li>
+                <li><a href="#api-routes">API Route Mappings</a></li>
+                <li><a href="#database-design">Database Design & ERD</a></li>
+                <li><a href="#scalability-plan">Scalability Roadmap</a></li>
+            </ol>
+        </div>
+
+        <div class="section" id="visual-architecture">
+            <h2>🏗️ Visual 3-Tier Architecture Diagram</h2>
+            
+            <div class="visual-diagram">
+                <h3>Logic-i Platform Architecture Overview</h3>
+                <div class="tier-container">
+                    <div class="tier-box">
+                        <h4>🎨 FRONTEND TIER</h4>
+                        <p><strong>React 18.3.1 + Vite</strong></p>
+                        <hr style="margin: 1rem 0; border: 1px solid rgba(255,255,255,0.3);">
+                        <div style="text-align: left; font-size: 0.9rem;">
+                            • Single Page Application<br>
+                            • Component-based UI<br>
+                            • Responsive Design<br>
+                            • State Management<br>
+                            • Route Protection
+                        </div>
+                    </div>
+                    
+                    <div class="tier-arrow">→</div>
+                    
+                    <div class="tier-box">
+                        <h4>⚙️ BACKEND TIER</h4>
+                        <p><strong>Node.js + Express</strong></p>
+                        <hr style="margin: 1rem 0; border: 1px solid rgba(255,255,255,0.3);">
+                        <div style="text-align: left; font-size: 0.9rem;">
+                            • RESTful API Design<br>
+                            • Service Architecture<br>
+                            • JWT Authentication<br>
+                            • Business Logic<br>
+                            • Middleware Stack
+                        </div>
+                    </div>
+                    
+                    <div class="tier-arrow">→</div>
+                    
+                    <div class="tier-box">
+                        <h4>💾 DATA TIER</h4>
+                        <p><strong>MySQL + External APIs</strong></p>
+                        <hr style="margin: 1rem 0; border: 1px solid rgba(255,255,255,0.3);">
+                        <div style="text-align: left; font-size: 0.9rem;">
+                            • Relational Database<br>
+                            • Razorpay Payment<br>
+                            • AWS SNS (OTP)<br>
+                            • Google OAuth<br>
+                            • File Storage
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🔗 Inter-Tier Communication</h4>
+                <p><strong>Frontend ↔ Backend:</strong> HTTPS REST API calls with JWT authentication</p>
+                <p><strong>Backend ↔ Database:</strong> Sequelize ORM with connection pooling</p>
+                <p><strong>Backend ↔ External APIs:</strong> Secure API integrations with error handling</p>
+            </div>
+        </div>
+
+        <div class="section" id="detailed-architecture">
+            <h2>🏛️ Detailed System Architecture</h2>
+            
+            <div class="diagram">
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                            🌐 EXTERNAL SERVICES LAYER                                │
+├─────────────────────┬─────────────────────┬─────────────────────┬─────────────────┤
+│   💳 Razorpay API   │   📱 AWS SNS        │   🔐 Google OAuth   │   📧 Email SMTP │
+│  (Payment Gateway)  │ (SMS/OTP Service)   │  (Authentication)   │  (Notifications)│
+│  • Order Creation   │ • SMS Delivery      │ • User Info API     │ • Booking Alerts│
+│  • Payment Verify   │ • OTP Generation    │ • Token Exchange    │ • System Alerts │
+└─────────────────────┴─────────────────────┴─────────────────────┴─────────────────┘
+                                            ▲
+                                            │ HTTPS/REST
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                         🎨 PRESENTATION LAYER (Frontend)                           │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                     React 18.3.1 + Vite + Tailwind CSS + TypeScript               │
+├─────────────────────┬─────────────────────┬─────────────────────┬─────────────────┤
+│   🏠 Public Pages   │  🔐 Auth Components │  📊 Dashboard Views │  👑 Admin Panel │
+│  • Landing/Hero     │  • Login/Register   │  • User Dashboard   │  • Approvals     │
+│  • Warehouse Search │  • OTP Verification │  • My Warehouses    │  • Analytics     │
+│  • Property Details │  • Google OAuth Btn │  • Booking History  │  • User Mgmt     │
+│  • About/Contact    │  • Password Reset   │  • Payment Records  │  • System Config │
+└─────────────────────┴─────────────────────┴─────────────────────┴─────────────────┘
+                                            ▲
+                                            │ HTTPS/JSON API
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                        ⚙️ APPLICATION LAYER (Backend)                              │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                        Node.js + Express.js + Service Architecture                 │
+├─────────────────────┬─────────────────────┬─────────────────────┬─────────────────┤
+│   🛣️ API Routes     │   🔒 Middleware     │   🔧 Service Layer  │   🎮 Controllers │
+│  • /api/auth/*      │  • JWT Validation   │  • AuthService      │  • AuthController│
+│  • /api/warehouse/* │  • CORS Policy      │  • PaymentService   │  • WarehouseCtrl │
+│  • /api/booking/*   │  • Rate Limiting    │  • BookingService   │  • BookingCtrl   │
+│  • /api/payment/*   │  • Input Validation │  • NotifyService    │  • PaymentCtrl   │
+│  • /api/admin/*     │  • Error Handling   │  • FileService      │  • AdminCtrl     │
+└─────────────────────┴─────────────────────┴─────────────────────┴─────────────────┘
+                                            ▲
+                                            │ SQL/Sequelize ORM
+                                            ▼
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                           💾 DATA PERSISTENCE LAYER                                │
+├─────────────────────────────────────────────────────────────────────────────────────┤
+│                         MySQL 8.0 + Sequelize ORM + File Storage                  │
+├─────────────────────┬─────────────────────┬─────────────────────┬─────────────────┤
+│   👥 User Data      │  🏢 Warehouse Data  │  💰 Transaction Data│  📁 File Storage │
+│  • users            │  • warehouses       │  • bookings         │  • Images        │
+│  • user_sessions    │  • warehouse_images │  • payments         │  • Documents     │
+│  • user_profiles    │  • amenities        │  • inquiries        │  • Certificates  │
+│  • auth_tokens      │  • availability     │  • analytics        │  • Backups       │
+└─────────────────────┴─────────────────────┴─────────────────────┴─────────────────┘
+            </div>
+        </div>
+
+        <div class="section" id="auth-flows">
+            <h2>🔐 Authentication Flow Breakdowns</h2>
+            
+            <h3>📧 Email/Password Authentication Flow</h3>
+            <div class="diagram">
+┌──────────┐     ┌──────────────┐     ┌───────────────┐     ┌──────────┐
+│  User    │     │   Frontend   │     │    Backend    │     │ Database │
+│ (Client) │     │   (React)    │     │  (Express)    │     │ (MySQL)  │
+└─────┬────┘     └──────┬───────┘     └───────┬───────┘     └─────┬────┘
+      │                  │                      │                   │
+      │ 1. Enter Email + Password               │                   │
+      ├─────────────────▶│                      │                   │
+      │                  │ 2. POST /api/auth/login                  │
+      │                  ├─────────────────────▶│                   │
+      │                  │                      │ 3. Validate Credentials
+      │                  │                      ├──────────────────▶│
+      │                  │                      │ 4. User Record    │
+      │                  │                      │◀──────────────────┤
+      │                  │                      │ 5. Compare bcrypt │
+      │                  │                      ├─────────┐         │
+      │                  │                      │         │         │
+      │                  │                      │◀────────┘         │
+      │                  │                      │ 6. Generate JWT   │
+      │                  │                      ├─────────┐         │
+      │                  │                      │         │         │
+      │                  │                      │◀────────┘         │
+      │                  │ 7. Return JWT + User│                   │
+      │                  │◀─────────────────────┤                   │
+      │                  │ 8. Store in localStorage                 │
+      │                  ├─────────┐            │                   │
+      │                  │         │            │                   │
+      │                  │◀────────┘            │                   │
+      │ 9. Redirect to Dashboard                │                   │
+      │◀─────────────────┤                      │                   │
+            </div>
+
+            <h3>🔍 Google OAuth 2.0 Flow</h3>
+            <div class="diagram">
+┌──────────┐   ┌──────────────┐   ┌───────────────┐   ┌──────────────┐   ┌──────────┐
+│  User    │   │   Frontend   │   │    Backend    │   │Google OAuth  │   │ Database │
+└─────┬────┘   └──────┬───────┘   └───────┬───────┘   └──────┬───────┘   └─────┬────┘
+      │                │                    │                  │                 │
+      │ 1. Click "Login with Google"        │                  │                 │
+      ├───────────────▶│                    │                  │                 │
+      │                │ 2. Redirect to Google Auth URL        │                 │
+      │                ├────────────────────────────────────────▶│                 │
+      │                │                    │                  │                 │
+      │ 3. User Authorizes & Consents       │                  │                 │
+      ├─────────────────────────────────────────────────────────▶│                 │
+      │                │                    │ 4. Auth Code     │                 │
+      │◀─────────────────────────────────────────────────────────┤                 │
+      │ 5. Send Code to Frontend            │                  │                 │
+      ├───────────────▶│ 6. POST /api/auth/google              │                 │
+      │                ├───────────────────▶│ 7. Exchange Code │                 │
+      │                │                    ├─────────────────▶│                 │
+      │                │                    │ 8. Access Token │                 │
+      │                │                    │◀─────────────────┤                 │
+      │                │                    │ 9. Get User Info │                 │
+      │                │                    ├─────────────────▶│                 │
+      │                │                    │ 10. User Profile │                 │
+      │                │                    │◀─────────────────┤                 │
+      │                │                    │ 11. Create/Update User            │
+      │                │                    ├─────────────────────────────────▶│
+      │                │                    │ 12. User Record  │                 │
+      │                │                    │◀─────────────────────────────────┤
+      │                │ 13. JWT + User Data│                  │                 │
+      │                │◀───────────────────┤                  │                 │
+      │ 14. Success Redirect                │                  │                 │
+      │◀───────────────┤                    │                  │                 │
+            </div>
+
+            <h3>📱 OTP via AWS SNS Flow</h3>
+            <div class="diagram">
+┌──────────┐   ┌──────────────┐   ┌───────────────┐   ┌──────────┐   ┌──────────┐
+│  User    │   │   Frontend   │   │    Backend    │   │ AWS SNS  │   │ Database │
+└─────┬────┘   └──────┬───────┘   └───────┬───────┘   └─────┬────┘   └─────┬────┘
+      │                │                    │                 │              │
+      │ 1. Enter Phone Number (+91XXXXXXXXXX)                 │              │
+      ├───────────────▶│                    │                 │              │
+      │                │ 2. POST /api/auth/request-otp        │              │
+      │                ├───────────────────▶│                 │              │
+      │                │                    │ 3. Validate Phone Format       │
+      │                │                    ├─────────┐       │              │
+      │                │                    │         │       │              │
+      │                │                    │◀────────┘       │              │
+      │                │                    │ 4. Generate 6-digit OTP        │
+      │                │                    ├─────────┐       │              │
+      │                │                    │         │       │              │
+      │                │                    │◀────────┘       │              │
+      │                │                    │ 5. Store OTP + Expiry          │
+      │                │                    ├─────────────────────────────▶│
+      │                │                    │ 6. Send SMS via SNS           │
+      │                │                    ├────────────────▶│              │
+      │                │                    │ 7. SMS Sent     │              │
+      │                │                    │◀────────────────┤              │
+      │                │ 8. OTP Sent Response                 │              │
+      │                │◀───────────────────┤                 │              │
+      │ 9. Enter OTP (6-digit)              │                 │              │
+      ├───────────────▶│ 10. POST /api/auth/verify-otp        │              │
+      │                ├───────────────────▶│ 11. Validate OTP & Expiry      │
+      │                │                    ├─────────────────────────────▶│
+      │                │                    │ 12. OTP Valid   │              │
+      │                │                    │◀─────────────────────────────┤
+      │                │                    │ 13. Clear OTP   │              │
+      │                │                    ├─────────────────────────────▶│
+      │                │                    │ 14. Generate JWT│              │
+      │                │                    ├─────────┐       │              │
+      │                │                    │         │       │              │
+      │                │                    │◀────────┘       │              │
+      │                │ 15. JWT + Success  │                 │              │
+      │                │◀───────────────────┤                 │              │
+      │ 16. Login Success                   │                 │              │
+      │◀───────────────┤                    │                 │              │
+            </div>
+
+            <div class="flow-step">
+                <h4>🔒 JWT Token Structure</h4>
+                <div class="api-route">
+                    <strong>Header:</strong> { "alg": "HS256", "typ": "JWT" }<br>
+                    <strong>Payload:</strong> { "userId": 123, "email": "user@example.com", "role": "user", "exp": 1640995200 }<br>
+                    <strong>Signature:</strong> HMACSHA256(base64UrlEncode(header) + "." + base64UrlEncode(payload), secret)
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="booking-inquiry">
+            <h2>📝 Booking vs Inquiry Flows</h2>
+            
+            <h3>🏢 Warehouse Booking Flow (Paid Transaction)</h3>
+            <div class="journey-flow">
+                <h4>Trigger: User wants to rent warehouse space</h4>
+                <div class="diagram">
+┌──────────┐   ┌──────────────┐   ┌───────────────┐   ┌──────────────┐   ┌──────────┐
+│  User    │   │   Frontend   │   │    Backend    │   │  Razorpay    │   │ Database │
+└─────┬────┘   └──────┬───────┘   └───────┬───────┘   └──────┬───────┘   └─────┬────┘
+      │                │                    │                  │                 │
+      │ 1. Select Warehouse & Duration      │                  │                 │
+      ├───────────────▶│                    │                  │                 │
+      │                │ 2. POST /api/booking/create          │                 │
+      │                ├───────────────────▶│                  │                 │
+      │                │                    │ 3. Validate Availability          │
+      │                │                    ├─────────────────────────────────▶│
+      │                │                    │ 4. Create Booking (PENDING)      │
+      │                │                    ├─────────────────────────────────▶│
+      │                │                    │ 5. Booking ID    │                 │
+      │                │                    │◀─────────────────────────────────┤
+      │                │                    │ 6. Create Razorpay Order          │
+      │                │                    ├─────────────────▶│                 │
+      │                │                    │ 7. Order Details │                 │
+      │                │                    │◀─────────────────┤                 │
+      │                │ 8. Payment Details │                  │                 │
+      │                │◀───────────────────┤                  │                 │
+      │                │ 9. Open Razorpay Checkout            │                 │
+      │                ├────────────────────────────────────────▶│                 │
+      │ 10. Complete Payment                 │                  │                 │
+      ├─────────────────────────────────────────────────────────▶│                 │
+      │                │                    │                  │                 │
+      │ 11. Payment Success Response        │                  │                 │
+      │◀─────────────────────────────────────────────────────────┤                 │
+      │                │ 12. Send Payment Data                   │                 │
+      ├───────────────▶├───────────────────▶│ 13. Verify Payment                 │
+      │                │                    ├─────────────────▶│                 │
+      │                │                    │ 14. Update Booking (CONFIRMED)     │
+      │                │                    ├─────────────────────────────────▶│
+      │                │                    │ 15. Send Confirmation Email       │
+      │                │                    ├─────────┐         │                 │
+      │                │                    │         │         │                 │
+      │                │                    │◀────────┘         │                 │
+      │                │ 16. Success + Receipt                  │                 │
+      │                │◀───────────────────┤                  │                 │
+      │ 17. Booking Confirmed               │                  │                 │
+      │◀───────────────┤                    │                  │                 │
+                </div>
+                
+                <p><strong>Who Sees It:</strong> User, Warehouse Owner, Admin</p>
+                <p><strong>Data Stored:</strong> bookings table (user_id, warehouse_id, start_date, end_date, amount, status) + payments table</p>
+                <p><strong>Status Flow:</strong> PENDING → CONFIRMED → ACTIVE → COMPLETED</p>
+            </div>
+
+            <h3>💬 Warehouse Inquiry Flow (Information Request)</h3>
+            <div class="journey-flow">
+                <h4>Trigger: User wants information about warehouse</h4>
+                <div class="diagram">
+┌──────────┐         ┌──────────────┐         ┌───────────────┐         ┌──────────┐
+│  User    │         │   Frontend   │         │    Backend    │         │ Database │
+└─────┬────┘         └──────┬───────┘         └───────┬───────┘         └─────┬────┘
+      │                      │                          │                       │
+      │ 1. Fill Inquiry Form (message, contact details) │                       │
+      ├─────────────────────▶│                          │                       │
+      │                      │ 2. POST /api/inquiry/create                     │
+      │                      ├─────────────────────────▶│                       │
+      │                      │                          │ 3. Validate Input    │
+      │                      │                          ├─────────┐             │
+      │                      │                          │         │             │
+      │                      │                          │◀────────┘             │
+      │                      │                          │ 4. Save Inquiry       │
+      │                      │                          ├──────────────────────▶│
+      │                      │                          │ 5. Inquiry ID         │
+      │                      │                          │◀──────────────────────┤
+      │                      │                          │ 6. Notify Warehouse Owner
+      │                      │                          ├─────────┐             │
+      │                      │                          │         │             │
+      │                      │                          │◀────────┘             │
+      │                      │                          │ 7. Notify Admin       │
+      │                      │                          ├─────────┐             │
+      │                      │                          │         │             │
+      │                      │                          │◀────────┘             │
+      │                      │ 8. Inquiry Submitted     │                       │
+      │                      │◀─────────────────────────┤                       │
+      │ 9. Thank You Message │                          │                       │
+      │◀─────────────────────┤                          │                       │
+                </div>
+                
+                <p><strong>Who Sees It:</strong> Warehouse Owner (email notification), User (confirmation), Admin (dashboard)</p>
+                <p><strong>Data Stored:</strong> inquiries table (user_id, warehouse_id, message, contact_email, contact_phone, status)</p>
+                <p><strong>Status Flow:</strong> NEW → RESPONDED → CONVERTED_TO_BOOKING → CLOSED</p>
+            </div>
+
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">📝</span>Booking Process</h4>
+                    <ul>
+                        <li><strong>Purpose:</strong> Paid warehouse rental</li>
+                        <li><strong>Payment:</strong> Required upfront</li>
+                        <li><strong>Verification:</strong> Razorpay signature</li>
+                        <li><strong>Contract:</strong> Legal binding agreement</li>
+                        <li><strong>Access:</strong> Physical warehouse keys</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">💬</span>Inquiry Process</h4>
+                    <ul>
+                        <li><strong>Purpose:</strong> Information gathering</li>
+                        <li><strong>Payment:</strong> Not required</li>
+                        <li><strong>Verification:</strong> Email/phone validation</li>
+                        <li><strong>Contract:</strong> No legal commitment</li>
+                        <li><strong>Access:</strong> Information only</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="admin-actions">
+            <h2>👑 Admin Role Actions & Permissions</h2>
+            
+            <h3>🛡️ Admin Permission Matrix</h3>
+            <table>
+                <tr>
+                    <th>Action Category</th>
+                    <th>Specific Actions</th>
+                    <th>Admin Level</th>
+                    <th>API Endpoint</th>
+                </tr>
+                <tr>
+                    <td rowspan="4">Warehouse Management</td>
+                    <td>Approve/Reject new warehouse listings</td>
+                    <td>Admin, Moderator</td>
+                    <td>PATCH /api/admin/warehouse/:id/approve</td>
+                </tr>
+                <tr>
+                    <td>Edit warehouse details</td>
+                    <td>Admin only</td>
+                    <td>PUT /api/admin/warehouse/:id</td>
+                </tr>
+                <tr>
+                    <td>Suspend/Unsuspend warehouses</td>
+                    <td>Admin only</td>
+                    <td>PATCH /api/admin/warehouse/:id/suspend</td>
+                </tr>
+                <tr>
+                    <td>Delete warehouse (soft delete)</td>
+                    <td>Super Admin only</td>
+                    <td>DELETE /api/admin/warehouse/:id</td>
+                </tr>
+                <tr>
+                    <td rowspan="4">User Management</td>
+                    <td>View user profiles & activity</td>
+                    <td>Admin, Support</td>
+                    <td>GET /api/admin/users/:id</td>
+                </tr>
+                <tr>
+                    <td>Suspend/Activate user accounts</td>
+                    <td>Admin only</td>
+                    <td>PATCH /api/admin/users/:id/status</td>
+                </tr>
+                <tr>
+                    <td>Reset user passwords</td>
+                    <td>Admin, Support</td>
+                    <td>POST /api/admin/users/:id/reset-password</td>
+                </tr>
+                <tr>
+                    <td>Change user roles</td>
+                    <td>Super Admin only</td>
+                    <td>PATCH /api/admin/users/:id/role</td>
+                </tr>
+                <tr>
+                    <td rowspan="3">Booking Oversight</td>
+                    <td>View all bookings</td>
+                    <td>Admin, Support</td>
+                    <td>GET /api/admin/bookings</td>
+                </tr>
+                <tr>
+                    <td>Cancel bookings (with refund)</td>
+                    <td>Admin only</td>
+                    <td>POST /api/admin/bookings/:id/cancel</td>
+                </tr>
+                <tr>
+                    <td>Resolve booking disputes</td>
+                    <td>Admin, Manager</td>
+                    <td>PATCH /api/admin/bookings/:id/resolve</td>
+                </tr>
+                <tr>
+                    <td rowspan="3">Inquiry Management</td>
+                    <td>Assign inquiries to warehouse owners</td>
+                    <td>Admin, Moderator</td>
+                    <td>PATCH /api/admin/inquiries/:id/assign</td>
+                </tr>
+                <tr>
+                    <td>Convert inquiries to bookings</td>
+                    <td>Admin only</td>
+                    <td>POST /api/admin/inquiries/:id/convert</td>
+                </tr>
+                <tr>
+                    <td>Mark inquiries as resolved</td>
+                    <td>Admin, Support</td>
+                    <td>PATCH /api/admin/inquiries/:id/resolve</td>
+                </tr>
+            </table>
+
+            <h3>📊 Admin Dashboard Examples</h3>
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🏢</span>Warehouse Approval Example</h4>
+                    <div class="api-route">
+                        // Admin reviews "Mumbai Warehouse #45"<br>
+                        // Location: Andheri East, 5000 sq ft<br>
+                        // Documents: Property papers ✅, NOC ✅<br>
+                        // Action: Click "Approve"<br>
+                        // Result: Status changes to "VERIFIED"<br>
+                        // Notification: Owner gets approval email
+                    </div>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">📋</span>Inquiry Assignment Example</h4>
+                    <div class="api-route">
+                        // New inquiry: "Need 2000 sq ft in Pune"<br>
+                        // Admin action: Search warehouses in Pune<br>
+                        // Assign to: "Pune Logistics Hub" owner<br>
+                        // Auto-email: Sent to warehouse owner<br>
+                        // Follow-up: Set reminder for 24 hours
+                    </div>
+                </div>
+            </div>
+
+            <h3>🔄 Admin Workflow Examples</h3>
+            <div class="flow-step">
+                <h4>Daily Admin Tasks</h4>
+                <ol>
+                    <li><strong>Morning Review:</strong> Check pending warehouse approvals (target: 24h approval time)</li>
+                    <li><strong>Inquiry Management:</strong> Assign new inquiries to appropriate warehouse owners</li>
+                    <li><strong>Dispute Resolution:</strong> Review booking cancellation requests</li>
+                    <li><strong>Analytics Review:</strong> Monitor platform metrics and user activity</li>
+                    <li><strong>System Maintenance:</strong> Check logs for errors or security issues</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="section" id="component-tree">
+            <h2>🌳 React Component Tree Structure</h2>
+            
+            <div class="diagram">
+App.jsx (Root Component)
+├── Providers/
+│   ├── AuthProvider.jsx (Authentication Context)
+│   ├── ThemeProvider.jsx (Theme/Dark Mode)
+│   └── QueryProvider.jsx (React Query Client)
+│
+├── Router/
+│   ├── AppRouter.jsx (Main Routing Logic)
+│   ├── ProtectedRoute.jsx (Auth Guard)
+│   └── AdminRoute.jsx (Admin Guard)
+│
+├── Layout/
+│   ├── Header/
+│   │   ├── Navbar.jsx
+│   │   ├── SearchBar.jsx
+│   │   ├── UserMenu.jsx
+│   │   └── MobileMenu.jsx
+│   ├── Footer/
+│   │   ├── Footer.jsx
+│   │   ├── LinkSection.jsx
+│   │   └── SocialLinks.jsx
+│   └── Sidebar/
+│       ├── Sidebar.jsx
+│       └── SidebarMenu.jsx
+│
+├── Pages/
+│   ├── Public/
+│   │   ├── Landing/
+│   │   │   ├── LandingPage.jsx
+│   │   │   ├── HeroSection.jsx
+│   │   │   ├── FeatureCards.jsx
+│   │   │   ├── TestimonialSection.jsx
+│   │   │   └── CTASection.jsx
+│   │   ├── WarehouseList/
+│   │   │   ├── WarehouseListPage.jsx
+│   │   │   ├── FilterSidebar.jsx
+│   │   │   ├── WarehouseGrid.jsx
+│   │   │   ├── WarehouseCard.jsx
+│   │   │   ├── PaginationControls.jsx
+│   │   │   └── SortDropdown.jsx
+│   │   ├── WarehouseDetail/
+│   │   │   ├── WarehouseDetailPage.jsx
+│   │   │   ├── ImageGallery.jsx
+│   │   │   ├── WarehouseInfo.jsx
+│   │   │   ├── AmenitiesList.jsx
+│   │   │   ├── LocationMap.jsx
+│   │   │   ├── BookingForm.jsx
+│   │   │   └── InquiryForm.jsx
+│   │   └── About/
+│   │       ├── AboutPage.jsx
+│   │       ├── TeamSection.jsx
+│   │       └── ContactForm.jsx
+│   │
+│   ├── Auth/
+│   │   ├── LoginPage.jsx
+│   │   ├── RegisterPage.jsx
+│   │   ├── ForgotPasswordPage.jsx
+│   │   ├── OTPVerificationPage.jsx
+│   │   ├── GoogleCallback.jsx
+│   │   └── Components/
+│   │       ├── LoginForm.jsx
+│   │       ├── RegisterForm.jsx
+│   │       ├── OTPInput.jsx
+│   │       └── GoogleLoginButton.jsx
+│   │
+│   ├── Dashboard/
+│   │   ├── User/
+│   │   │   ├── UserDashboard.jsx
+│   │   │   ├── DashboardStats.jsx
+│   │   │   ├── QuickActions.jsx
+│   │   │   ├── RecentActivity.jsx
+│   │   │   ├── MyWarehouses/
+│   │   │   │   ├── MyWarehousesPage.jsx
+│   │   │   │   ├── WarehouseTable.jsx
+│   │   │   │   ├── AddWarehouseModal.jsx
+│   │   │   │   └── EditWarehouseModal.jsx
+│   │   │   ├── MyBookings/
+│   │   │   │   ├── MyBookingsPage.jsx
+│   │   │   │   ├── BookingTable.jsx
+│   │   │   │   └── BookingDetailsModal.jsx
+│   │   │   └── Profile/
+│   │   │       ├── ProfilePage.jsx
+│   │   │       ├── ProfileForm.jsx
+│   │   │       └── PasswordChangeForm.jsx
+│   │   │
+│   │   └── Admin/
+│   │       ├── AdminDashboard.jsx
+│   │       ├── AdminStats.jsx
+│   │       ├── PendingApprovals/
+│   │       │   ├── ApprovalsPage.jsx
+│   │       │   ├── ApprovalQueue.jsx
+│   │       │   └── ApprovalModal.jsx
+│   │       ├── UserManagement/
+│   │       │   ├── UserManagementPage.jsx
+│   │       │   ├── UserTable.jsx
+│   │       │   ├── UserDetailsModal.jsx
+│   │       │   └── BulkActions.jsx
+│   │       ├── Analytics/
+│   │       │   ├── AnalyticsPage.jsx
+│   │       │   ├── RevenueChart.jsx
+│   │       │   ├── UserGrowthChart.jsx
+│   │       │   ├── GeographicChart.jsx
+│   │       │   └── KPICards.jsx
+│   │       └── SystemConfig/
+│   │           ├── ConfigPage.jsx
+│   │           ├── SettingsForm.jsx
+│   │           └── FeatureFlags.jsx
+│   │
+│   └── Payment/
+│       ├── PaymentPage.jsx
+│       ├── PaymentForm.jsx
+│       ├── PaymentSuccess.jsx
+│       ├── PaymentFailure.jsx
+│       └── PaymentHistory.jsx
+│
+├── Components/ (Shared/Reusable)
+│   ├── UI/
+│   │   ├── Button/
+│   │   │   ├── Button.jsx
+│   │   │   ├── LoadingButton.jsx
+│   │   │   └── IconButton.jsx
+│   │   ├── Forms/
+│   │   │   ├── Input.jsx
+│   │   │   ├── Select.jsx
+│   │   │   ├── Checkbox.jsx
+│   │   │   ├── RadioGroup.jsx
+│   │   │   ├── FileUpload.jsx
+│   │   │   └── FormField.jsx
+│   │   ├── Feedback/
+│   │   │   ├── Alert.jsx
+│   │   │   ├── Toast.jsx
+│   │   │   ├── LoadingSpinner.jsx
+│   │   │   ├── ProgressBar.jsx
+│   │   │   └── Skeleton.jsx
+│   │   ├── Display/
+│   │   │   ├── Card.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── Dropdown.jsx
+│   │   │   ├── Tabs.jsx
+│   │   │   ├── Accordion.jsx
+│   │   │   └── Table.jsx
+│   │   └── Navigation/
+│   │       ├── Breadcrumb.jsx
+│   │       ├── Pagination.jsx
+│   │       ├── Menu.jsx
+│   │       └── BackButton.jsx
+│   │
+│   ├── Business/
+│   │   ├── WarehouseCard.jsx
+│   │   ├── BookingCard.jsx
+│   │   ├── PaymentCard.jsx
+│   │   ├── UserAvatar.jsx
+│   │   ├── StatusBadge.jsx
+│   │   ├── PriceDisplay.jsx
+│   │   ├── LocationTag.jsx
+│   │   └── RatingStars.jsx
+│   │
+│   └── Charts/
+│       ├── LineChart.jsx
+│       ├── BarChart.jsx
+│       ├── PieChart.jsx
+│       ├── AreaChart.jsx
+│       └── HeatMap.jsx
+│
+├── Hooks/ (Custom React Hooks)
+│   ├── useAuth.js
+│   ├── useForm.js
+│   ├── useApi.js
+│   ├── useLocalStorage.js
+│   ├── useDebounce.js
+│   ├── usePagination.js
+│   ├── useModal.js
+│   └── useToast.js
+│
+├── Services/ (API Layer)
+│   ├── api.js (Axios instance)
+│   ├── authService.js
+│   ├── warehouseService.js
+│   ├── bookingService.js
+│   ├── paymentService.js
+│   ├── adminService.js
+│   └── uploadService.js
+│
+├── Utils/
+│   ├── constants.js
+│   ├── helpers.js
+│   ├── validation.js
+│   ├── formatting.js
+│   ├── dateUtils.js
+│   └── localStorage.js
+│
+├── Types/ (TypeScript definitions)
+│   ├── user.types.ts
+│   ├── warehouse.types.ts
+│   ├── booking.types.ts
+│   ├── payment.types.ts
+│   └── common.types.ts
+│
+└── Assets/
+    ├── images/
+    ├── icons/
+    ├── styles/
+    │   ├── globals.css
+    │   ├── components.css
+    │   └── utilities.css
+    └── fonts/
+            </div>
+
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🎯</span>Component Design Principles</h4>
+                    <ul>
+                        <li><strong>Atomic Design:</strong> Atoms → Molecules → Organisms → Pages</li>
+                        <li><strong>Single Responsibility:</strong> Each component has one clear purpose</li>
+                        <li><strong>Prop Drilling Avoidance:</strong> Use Context for shared state</li>
+                        <li><strong>Performance:</strong> React.memo() for expensive components</li>
+                        <li><strong>Accessibility:</strong> ARIA labels and semantic HTML</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🔄</span>State Management Strategy</h4>
+                    <ul>
+                        <li><strong>Local State:</strong> useState for component-specific data</li>
+                        <li><strong>Global State:</strong> Context API for auth/theme</li>
+                        <li><strong>Server State:</strong> React Query for API data</li>
+                        <li><strong>Form State:</strong> React Hook Form for complex forms</li>
+                        <li><strong>URL State:</strong> React Router for navigation state</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="service-layer">
+            <h2>🔧 Service Layer & Modular Logic</h2>
+            
+            <h3>🏗️ Backend Service Architecture</h3>
+            <div class="diagram">
+Express.js Application
+├── Controllers/ (Request/Response Handling)
+│   ├── AuthController.js
+│   │   ├── login()
+│   │   ├── register()
+│   │   ├── googleAuth()
+│   │   ├── requestOTP()
+│   │   └── verifyOTP()
+│   ├── WarehouseController.js
+│   │   ├── getWarehouses()
+│   │   ├── getWarehouseById()
+│   │   ├── createWarehouse()
+│   │   ├── updateWarehouse()
+│   │   └── deleteWarehouse()
+│   ├── BookingController.js
+│   │   ├── createBooking()
+│   │   ├── getMyBookings()
+│   │   ├── cancelBooking()
+│   │   └── getBookingDetails()
+│   ├── PaymentController.js
+│   │   ├── createOrder()
+│   │   ├── verifyPayment()
+│   │   ├── handleWebhook()
+│   │   └── processRefund()
+│   └── AdminController.js
+│       ├── approveWarehouse()
+│       ├── getUserList()
+│       ├── getAnalytics()
+│       └── manageInquiries()
+│
+├── Services/ (Business Logic Layer)
+│   ├── AuthService.js
+│   │   ├── validateCredentials()
+│   │   ├── generateJWT()
+│   │   ├── verifyToken()
+│   │   ├── hashPassword()
+│   │   ├── sendOTP()
+│   │   └── googleOAuthFlow()
+│   ├── WarehouseService.js
+│   │   ├── searchWarehouses()
+│   │   ├── filterByLocation()
+│   │   ├── checkAvailability()
+│   │   ├── validateWarehouseData()
+│   │   └── updateWarehouseStatus()
+│   ├── BookingService.js
+│   │   ├── validateBookingDates()
+│   │   ├── calculateTotalAmount()
+│   │   ├── checkConflicts()
+│   │   ├── createBookingRecord()
+│   │   └── updateBookingStatus()
+│   ├── PaymentService.js
+│   │   ├── createRazorpayOrder()
+│   │   ├── verifyPaymentSignature()
+│   │   ├── updatePaymentStatus()
+│   │   ├── processRefund()
+│   │   └── generateInvoice()
+│   ├── NotificationService.js
+│   │   ├── sendEmail()
+│   │   ├── sendSMS()
+│   │   ├── createNotification()
+│   │   └── pushNotification()
+│   ├── FileService.js
+│   │   ├── uploadImage()
+│   │   ├── resizeImage()
+│   │   ├── validateFileType()
+│   │   ├── generateThumbnail()
+│   │   └── deleteFile()
+│   └── AnalyticsService.js
+│       ├── trackUserEvent()
+│       ├── calculateRevenue()
+│       ├── generateReports()
+│       ├── getUserMetrics()
+│       └── getWarehouseStats()
+│
+├── Middleware/ (Cross-cutting Concerns)
+│   ├── authMiddleware.js (JWT validation)
+│   ├── roleMiddleware.js (Permission checking)
+│   ├── validationMiddleware.js (Input validation)
+│   ├── rateLimitMiddleware.js (Rate limiting)
+│   ├── corsMiddleware.js (CORS policy)
+│   ├── errorMiddleware.js (Error handling)
+│   └── loggingMiddleware.js (Request logging)
+│
+├── Models/ (Data Layer)
+│   ├── User.js (Sequelize model)
+│   ├── Warehouse.js
+│   ├── Booking.js
+│   ├── Payment.js
+│   ├── Inquiry.js
+│   └── WarehouseAnalytics.js
+│
+├── Routes/ (API Endpoints)
+│   ├── authRoutes.js
+│   ├── warehouseRoutes.js
+│   ├── bookingRoutes.js
+│   ├── paymentRoutes.js
+│   ├── adminRoutes.js
+│   └── publicRoutes.js
+│
+└── Utils/ (Helper Functions)
+    ├── database.js (DB connection)
+    ├── validation.js (Validation schemas)
+    ├── encryption.js (Crypto functions)
+    ├── dateHelpers.js
+    ├── fileHelpers.js
+    └── constants.js
+            </div>
+
+            <h3>🔄 Service Interaction Flow</h3>
+            <div class="flow-step">
+                <h4>Example: User Books a Warehouse</h4>
+                <ol>
+                    <li><strong>Controller:</strong> BookingController.createBooking() receives request</li>
+                    <li><strong>Validation:</strong> Middleware validates input data and JWT token</li>
+                    <li><strong>Business Logic:</strong> BookingService.validateBookingDates() checks availability</li>
+                    <li><strong>Payment:</strong> PaymentService.createRazorpayOrder() creates payment order</li>
+                    <li><strong>Database:</strong> BookingService.createBookingRecord() saves to DB</li>
+                    <li><strong>Notification:</strong> NotificationService.sendEmail() confirms booking</li>
+                    <li><strong>Analytics:</strong> AnalyticsService.trackUserEvent() logs the action</li>
+                    <li><strong>Response:</strong> Controller returns formatted response to frontend</li>
+                </ol>
+            </div>
+
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🔐</span>AuthService Example</h4>
+                    <div class="api-route">
+// services/AuthService.js<br>
+class AuthService {<br>
+&nbsp;&nbsp;async login(email, password) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const user = await User.findByEmail(email);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const isValid = await bcrypt.compare(password, user.password);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (!isValid) throw new Error('Invalid credentials');<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return this.generateJWT(user);<br>
+&nbsp;&nbsp;}<br>
+}<br>
+                    </div>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">💳</span>PaymentService Example</h4>
+                    <div class="api-route">
+// services/PaymentService.js<br>
+class PaymentService {<br>
+&nbsp;&nbsp;async createOrder(bookingId, amount) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const order = await razorpay.orders.create({<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;amount: amount * 100, // Convert to paise<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;currency: 'INR',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;receipt: `booking_${bookingId}`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;});<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return order;<br>
+&nbsp;&nbsp;}<br>
+}<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="security-hld">
+            <h2>🛡️ Security High Level Design</h2>
+            
+            <div class="visual-diagram">
+                <h3>🔒 Multi-Layer Security Architecture</h3>
+                <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+                    <h4>🌐 Network Security Layer</h4>
+                    <p>• Cloudflare DDoS Protection • SSL/TLS Encryption • Web Application Firewall</p>
+                    
+                    <h4>🚪 Application Security Layer</h4>
+                    <p>• JWT Authentication • Role-based Authorization • Input Validation • CORS Policy</p>
+                    
+                    <h4>💾 Data Security Layer</h4>
+                    <p>• Bcrypt Password Hashing • Prepared Statements • Data Encryption • Audit Logging</p>
+                    
+                    <h4>💳 Payment Security Layer</h4>
+                    <p>• PCI DSS Compliance • Tokenized Payments • Signature Verification • Fraud Detection</p>
+                </div>
+            </div>
+
+            <h3>🔐 JWT Security Implementation</h3>
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🎫</span>Token Structure</h4>
+                    <ul>
+                        <li><strong>Algorithm:</strong> HS256 (HMAC SHA-256)</li>
+                        <li><strong>Expiration:</strong> 15 minutes (short-lived)</li>
+                        <li><strong>Refresh Token:</strong> 7 days (rotation)</li>
+                        <li><strong>Payload:</strong> User ID, role, permissions</li>
+                        <li><strong>Secret:</strong> Environment variable, rotated monthly</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🔒</span>Middleware Security</h4>
+                    <div class="api-route">
+// middleware/authMiddleware.js<br>
+const verifyToken = (req, res, next) => {<br>
+&nbsp;&nbsp;const token = req.header('Authorization')?.replace('Bearer ', '');<br>
+&nbsp;&nbsp;if (!token) return res.status(401).json({ error: 'Access denied' });<br>
+&nbsp;&nbsp;<br>
+&nbsp;&nbsp;try {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;const decoded = jwt.verify(token, process.env.JWT_SECRET);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;req.user = decoded;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;next();<br>
+&nbsp;&nbsp;} catch (error) {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;res.status(400).json({ error: 'Invalid token' });<br>
+&nbsp;&nbsp;}<br>
+};<br>
+                    </div>
+                </div>
+            </div>
+
+            <h3>🛡️ Input Validation & Sanitization</h3>
+            <div class="security-layer">
+                <h4>Joi Validation Schema Example</h4>
+                <div class="api-route">
+const warehouseSchema = Joi.object({<br>
+&nbsp;&nbsp;name: Joi.string().min(3).max(100).required(),<br>
+&nbsp;&nbsp;description: Joi.string().max(1000).required(),<br>
+&nbsp;&nbsp;address: Joi.string().max(200).required(),<br>
+&nbsp;&nbsp;city: Joi.string().min(2).max(50).required(),<br>
+&nbsp;&nbsp;pincode: Joi.string().pattern(/^[1-9][0-9]{5}$/).required(),<br>
+&nbsp;&nbsp;area_sqft: Joi.number().integer().min(100).max(100000).required(),<br>
+&nbsp;&nbsp;price_per_sqft: Joi.number().min(1).max(1000).required()<br>
+});
+                </div>
+            </div>
+
+            <h3>🔑 Role-Based Access Control (RBAC)</h3>
+            <table>
+                <tr>
+                    <th>Role</th>
+                    <th>Permissions</th>
+                    <th>Access Level</th>
+                </tr>
+                <tr>
+                    <td>Guest</td>
+                    <td>View warehouses, create inquiries</td>
+                    <td>Public pages only</td>
+                </tr>
+                <tr>
+                    <td>User</td>
+                    <td>Book warehouses, manage profile</td>
+                    <td>User dashboard</td>
+                </tr>
+                <tr>
+                    <td>Owner</td>
+                    <td>List warehouses, view bookings</td>
+                    <td>Owner dashboard</td>
+                </tr>
+                <tr>
+                    <td>Moderator</td>
+                    <td>Approve warehouses, manage inquiries</td>
+                    <td>Limited admin panel</td>
+                </tr>
+                <tr>
+                    <td>Admin</td>
+                    <td>Full user & warehouse management</td>
+                    <td>Full admin panel</td>
+                </tr>
+                <tr>
+                    <td>Super Admin</td>
+                    <td>System config, role management</td>
+                    <td>System administration</td>
+                </tr>
+            </table>
+
+            <h3>🚨 Security Monitoring</h3>
+            <div class="security-layer">
+                <h4>Real-time Security Alerts</h4>
+                <ul>
+                    <li><strong>Failed Login Attempts:</strong> >5 attempts in 10 minutes</li>
+                    <li><strong>Suspicious API Usage:</strong> Rate limit exceeded</li>
+                    <li><strong>Invalid Token Usage:</strong> Expired or tampered JWTs</li>
+                    <li><strong>Unusual Payment Activity:</strong> High-value transactions</li>
+                    <li><strong>Data Breach Attempts:</strong> SQL injection patterns</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="deployment-flow">
+            <h2>🚀 Deployment Infrastructure Flow</h2>
+            
+            <h3>📦 Dev → Production Pipeline</h3>
+            <div class="diagram">
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│    DEV      │────▶│   BUILD     │────▶│    TEST     │────▶│   DEPLOY    │────▶│    LIVE     │
+│ Environment │     │   Process   │     │   Process   │     │   Process   │     │ Environment │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+       │                     │                     │                     │                     │
+   ┌───▼────┐           ┌───▼────┐           ┌───▼────┐           ┌───▼────┐           ┌───▼────┐
+   │ Local  │           │  Vite  │           │  Jest  │           │  PM2   │           │ NGINX  │
+   │ Setup  │           │ Build  │           │ Tests  │           │Manager │           │Reverse │
+   │React+  │           │+       │           │+       │           │+       │           │ Proxy  │
+   │Node.js │           │Bundle  │           │ESLint  │           │Deploy  │           │+SSL    │
+   └────────┘           └────────┘           └────────┘           └────────┘           └────────┘
+            </div>
+
+            <h3>🏗️ Infrastructure Components</h3>
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">💻</span>VPS Server Setup</h4>
+                    <ul>
+                        <li><strong>OS:</strong> Ubuntu 22.04 LTS</li>
+                        <li><strong>CPU:</strong> 4 vCPUs</li>
+                        <li><strong>RAM:</strong> 8GB</li>
+                        <li><strong>Storage:</strong> 160GB SSD</li>
+                        <li><strong>Network:</strong> 1Gbps</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">⚙️</span>Process Management</h4>
+                    <ul>
+                        <li><strong>PM2:</strong> Node.js process manager</li>
+                        <li><strong>Cluster Mode:</strong> 4 worker processes</li>
+                        <li><strong>Auto-restart:</strong> On crash or memory limit</li>
+                        <li><strong>Log Rotation:</strong> Daily log files</li>
+                        <li><strong>Monitoring:</strong> CPU/Memory usage alerts</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🌐</span>Web Server Config</h4>
+                    <ul>
+                        <li><strong>NGINX:</strong> Reverse proxy + static files</li>
+                        <li><strong>SSL/TLS:</strong> Let's Encrypt certificates</li>
+                        <li><strong>Gzip:</strong> Response compression</li>
+                        <li><strong>Caching:</strong> Browser + CDN caching</li>
+                        <li><strong>Security:</strong> Headers + rate limiting</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>🔄 Deployment Commands</h3>
+            <div class="flow-step">
+                <h4>Automated Deployment Script</h4>
+                <div class="api-route">
+#!/bin/bash<br>
+# deploy.sh - Automated deployment script<br>
+<br>
+echo "🚀 Starting deployment..."<br>
+<br>
+# 1. Pull latest code<br>
+git pull origin main<br>
+<br>
+# 2. Install dependencies<br>
+npm ci --production<br>
+<br>
+# 3. Build frontend<br>
+npm run build<br>
+<br>
+# 4. Run tests<br>
+npm test<br>
+<br>
+# 5. Backup current deployment<br>
+cp -r dist dist_backup_$(date +%Y%m%d_%H%M%S)<br>
+<br>
+# 6. Deploy new build<br>
+cp -r dist/* /var/www/logic-i/dist/<br>
+<br>
+# 7. Restart backend<br>
+pm2 restart logic-i-api<br>
+<br>
+# 8. Reload Nginx<br>
+sudo nginx -s reload<br>
+<br>
+# 9. Health check<br>
+curl -f http://localhost:3000/health || exit 1<br>
+<br>
+echo "✅ Deployment completed successfully!"
+                </div>
+            </div>
+
+            <h3>📊 Monitoring & Alerts</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Tool</th>
+                    <th>Alert Threshold</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>CPU Usage</td>
+                    <td>PM2 Monitor</td>
+                    <td>&gt; 80% for 5 minutes</td>
+                    <td>Scale up or restart</td>
+                </tr>
+                <tr>
+                    <td>Memory Usage</td>
+                    <td>PM2 Monitor</td>
+                    <td>&gt; 85% of available RAM</td>
+                    <td>Restart processes</td>
+                </tr>
+                <tr>
+                    <td>Response Time</td>
+                    <td>UptimeRobot</td>
+                    <td>&gt; 2 seconds average</td>
+                    <td>Check database queries</td>
+                </tr>
+                <tr>
+                    <td>Error Rate</td>
+                    <td>Sentry</td>
+                    <td>&gt; 5% of requests</td>
+                    <td>Immediate investigation</td>
+                </tr>
+                <tr>
+                    <td>Disk Space</td>
+                    <td>System Monitor</td>
+                    <td>&gt; 90% full</td>
+                    <td>Clean logs, add storage</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" id="data-flow-examples">
+            <h2>📊 Real Data Flow Examples</h2>
+            
+            <h3>🏢 Example 1: "User Books Warehouse" Complete Flow</h3>
+            <div class="journey-flow">
+                <h4>Scenario: Rajesh needs 1000 sq ft warehouse in Mumbai for 6 months</h4>
+                
+                <div class="diagram">
+Step-by-Step Data Flow:
+
+1. 🔍 SEARCH & DISCOVERY
+   Frontend → Backend → Database
+   GET /api/warehouses?city=Mumbai&min_area=1000
+   Query: SELECT * FROM warehouses WHERE city='Mumbai' AND area_sqft >= 1000
+   Result: [warehouse_id: 23, name: "Mumbai Storage Hub", area: 1200 sq ft]
+
+2. 📋 VIEW DETAILS
+   Frontend → Backend → Database
+   GET /api/warehouses/23
+   Query: SELECT w.*, u.name as owner_name FROM warehouses w JOIN users u ON w.user_id = u.id WHERE w.id = 23
+   Result: Complete warehouse details + owner info + images
+
+3. 🔐 USER AUTHENTICATION
+   Frontend → Backend → Database
+   POST /api/auth/login { email: "rajesh@email.com", password: "***" }
+   Query: SELECT * FROM users WHERE email = 'rajesh@email.com'
+   Action: bcrypt.compare(password, user.hashed_password)
+   Result: JWT token generated
+
+4. 📅 BOOKING CREATION
+   Frontend → Backend → Database
+   POST /api/booking/create {
+     warehouse_id: 23,
+     start_date: "2024-01-01",
+     end_date: "2024-06-30",
+     user_id: 456 (from JWT)
+   }
+   
+   Validation Queries:
+   - Check availability: SELECT * FROM bookings WHERE warehouse_id = 23 
+     AND ((start_date BETWEEN '2024-01-01' AND '2024-06-30') 
+     OR (end_date BETWEEN '2024-01-01' AND '2024-06-30'))
+   - Calculate amount: area_sqft * price_per_sqft * months = 1200 * 50 * 6 = ₹360,000
+   
+   Insert: INSERT INTO bookings (user_id, warehouse_id, start_date, end_date, total_amount, status)
+   VALUES (456, 23, '2024-01-01', '2024-06-30', 360000, 'PENDING')
+   Result: booking_id: 789
+
+5. 💳 PAYMENT PROCESSING
+   Backend → Razorpay API
+   POST https://api.razorpay.com/v1/orders
+   Body: { amount: 36000000, currency: 'INR', receipt: 'booking_789' }
+   Result: { order_id: 'order_ABC123', status: 'created' }
+   
+   Update: UPDATE bookings SET razorpay_order_id = 'order_ABC123' WHERE id = 789
+
+6. 💰 PAYMENT VERIFICATION
+   Razorpay → Backend Webhook
+   POST /api/payment/webhook
+   Body: { event: 'payment.captured', payment: { order_id: 'order_ABC123', status: 'captured' }}
+   
+   Verification: Validate signature using Razorpay webhook secret
+   Update: UPDATE bookings SET status = 'CONFIRMED' WHERE razorpay_order_id = 'order_ABC123'
+   Insert: INSERT INTO payments (booking_id, razorpay_payment_id, amount, status) 
+   VALUES (789, 'pay_XYZ789', 360000, 'CAPTURED')
+
+7. 📧 NOTIFICATIONS
+   Backend → Email Service
+   - Send confirmation to Rajesh: "Booking confirmed for Mumbai Storage Hub"
+   - Send notification to warehouse owner: "New booking received"
+   - Update analytics: INSERT INTO warehouse_analytics (warehouse_id, bookings) 
+     VALUES (23, bookings + 1) ON DUPLICATE KEY UPDATE bookings = bookings + 1
+
+8. 📱 REAL-TIME UPDATES
+   Backend → Frontend (WebSocket/Polling)
+   - Update booking status on user dashboard
+   - Show success message with booking details
+   - Add booking to "My Bookings" list
+                </div>
+            </div>
+
+            <h3>🏗️ Example 2: "Admin Approves Warehouse" Flow</h3>
+            <div class="journey-flow">
+                <h4>Scenario: Admin reviews new warehouse listing from Priya in Bangalore</h4>
+                
+                <div class="diagram">
+Data Transition Flow:
+
+1. 📋 WAREHOUSE SUBMISSION
+   Owner (Priya) → Frontend → Backend → Database
+   POST /api/warehouse/create {
+     name: "Bangalore Tech Hub",
+     city: "Bangalore",
+     area_sqft: 2000,
+     documents: ["property_deed.pdf", "noc.pdf"]
+   }
+   Insert: INSERT INTO warehouses (user_id, name, city, status) VALUES (123, 'Bangalore Tech Hub', 'Bangalore', 'PENDING')
+   Result: warehouse_id: 456, status: 'PENDING'
+
+2. 🔔 ADMIN NOTIFICATION
+   Database Trigger → Notification Service
+   - Email to admin: "New warehouse pending approval"
+   - Dashboard counter update: pending_count++
+   
+3. 👑 ADMIN REVIEW
+   Admin → Dashboard → Backend → Database
+   GET /api/admin/warehouses/pending
+   Query: SELECT w.*, u.name as owner_name FROM warehouses w 
+   JOIN users u ON w.user_id = u.id WHERE w.status = 'PENDING'
+   Result: List of pending warehouses including Priya's
+
+4. 🔍 DETAILED INSPECTION
+   Admin clicks on warehouse → Backend → Database + File System
+   GET /api/admin/warehouses/456/full-details
+   - Fetch warehouse details
+   - Load uploaded documents
+   - Check owner verification status
+   - Review similar warehouses in area
+
+5. ✅ APPROVAL DECISION
+   Admin → Backend → Database
+   PATCH /api/admin/warehouses/456/approve {
+     status: "APPROVED",
+     admin_notes: "All documents verified. Good location.",
+     verified_by: admin_user_id
+   }
+   
+   Updates:
+   - UPDATE warehouses SET status = 'APPROVED', verified_by = 789, verified_at = NOW() WHERE id = 456
+   - INSERT INTO audit_log (action, admin_id, warehouse_id, timestamp) VALUES ('APPROVE', 789, 456, NOW())
+
+6. 📧 OWNER NOTIFICATION
+   Backend → Email Service
+   - Send approval email to Priya
+   - Include next steps (how to manage listing)
+   - Update owner dashboard with live status
+
+7. 🔄 SYSTEM UPDATES
+   - Warehouse becomes searchable by users
+   - Analytics updated: approved_warehouses++
+   - Search index refreshed
+   - Owner can now receive bookings
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>📈 Key Data Flow Patterns</h4>
+                <ul>
+                    <li><strong>Validation First:</strong> All data validated before database writes</li>
+                    <li><strong>Atomic Transactions:</strong> Related updates happen together (booking + payment)</li>
+                    <li><strong>Audit Trail:</strong> Every action logged with user, timestamp, and changes</li>
+                    <li><strong>Event-Driven:</strong> Status changes trigger notifications and updates</li>
+                    <li><strong>Real-time Sync:</strong> Frontend immediately reflects backend state changes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section" id="api-routes">
+            <h2>🛣️ API Route Mappings to Modules</h2>
+            
+            <h3>🔐 Authentication Routes</h3>
+            <div class="api-route">
+POST   /api/auth/register          → AuthController.register()      → AuthService.createUser()<br>
+POST   /api/auth/login             → AuthController.login()         → AuthService.validateCredentials()<br>
+POST   /api/auth/google            → AuthController.googleAuth()    → AuthService.handleGoogleOAuth()<br>
+POST   /api/auth/request-otp       → AuthController.requestOTP()    → AuthService.sendOTP()<br>
+POST   /api/auth/verify-otp        → AuthController.verifyOTP()     → AuthService.validateOTP()<br>
+POST   /api/auth/refresh           → AuthController.refreshToken()  → AuthService.refreshJWT()<br>
+POST   /api/auth/logout            → AuthController.logout()        → AuthService.invalidateToken()<br>
+POST   /api/auth/forgot-password   → AuthController.forgotPassword()→ AuthService.sendResetLink()
+            </div>
+
+            <h3>🏢 Warehouse Management Routes</h3>
+            <div class="api-route">
+GET    /api/warehouses             → WarehouseController.getAll()      → WarehouseService.searchWarehouses()<br>
+GET    /api/warehouses/:id         → WarehouseController.getById()     → WarehouseService.getWarehouseDetails()<br>
+POST   /api/warehouses             → WarehouseController.create()      → WarehouseService.createWarehouse()<br>
+PUT    /api/warehouses/:id         → WarehouseController.update()      → WarehouseService.updateWarehouse()<br>
+DELETE /api/warehouses/:id         → WarehouseController.delete()      → WarehouseService.deleteWarehouse()<br>
+GET    /api/warehouses/search      → WarehouseController.search()      → WarehouseService.advancedSearch()<br>
+GET    /api/warehouses/my          → WarehouseController.getUserWH()   → WarehouseService.getOwnerWarehouses()<br>
+POST   /api/warehouses/:id/images  → WarehouseController.uploadImages()→ FileService.uploadWarehouseImages()
+            </div>
+
+            <h3>📅 Booking Management Routes</h3>
+            <div class="api-route">
+POST   /api/bookings               → BookingController.create()       → BookingService.createBooking()<br>
+GET    /api/bookings/my            → BookingController.getUserBookings()→ BookingService.getUserBookings()<br>
+GET    /api/bookings/:id           → BookingController.getById()      → BookingService.getBookingDetails()<br>
+PATCH  /api/bookings/:id/cancel    → BookingController.cancel()       → BookingService.cancelBooking()<br>
+GET    /api/bookings/warehouse/:id → BookingController.getByWarehouse()→ BookingService.getWarehouseBookings()<br>
+PATCH  /api/bookings/:id/extend    → BookingController.extend()       → BookingService.extendBooking()
+            </div>
+
+            <h3>💳 Payment Processing Routes</h3>
+            <div class="api-route">
+POST   /api/payments/create-order  → PaymentController.createOrder()  → PaymentService.createRazorpayOrder()<br>
+POST   /api/payments/verify        → PaymentController.verify()       → PaymentService.verifyPayment()<br>
+POST   /api/payments/webhook       → PaymentController.webhook()      → PaymentService.handleWebhook()<br>
+GET    /api/payments/history       → PaymentController.getHistory()   → PaymentService.getPaymentHistory()<br>
+POST   /api/payments/refund        → PaymentController.refund()       → PaymentService.processRefund()<br>
+GET    /api/payments/:id/invoice   → PaymentController.getInvoice()   → PaymentService.generateInvoice()
+            </div>
+
+            <h3>👑 Admin Panel Routes</h3>
+            <div class="api-route">
+GET    /api/admin/dashboard        → AdminController.getDashboard()   → AnalyticsService.getDashboardStats()<br>
+GET    /api/admin/warehouses/pending→ AdminController.getPendingWH()  → WarehouseService.getPendingApprovals()<br>
+PATCH  /api/admin/warehouses/:id/approve→ AdminController.approveWH() → WarehouseService.approveWarehouse()<br>
+GET    /api/admin/users            → AdminController.getUsers()      → UserService.getAllUsers()<br>
+PATCH  /api/admin/users/:id/status → AdminController.updateUserStatus()→ UserService.updateUserStatus()<br>
+GET    /api/admin/analytics        → AdminController.getAnalytics()  → AnalyticsService.getDetailedAnalytics()<br>
+GET    /api/admin/inquiries        → AdminController.getInquiries()  → InquiryService.getAllInquiries()
+            </div>
+
+            <h3>💬 Inquiry Management Routes</h3>
+            <div class="api-route">
+POST   /api/inquiries              → InquiryController.create()       → InquiryService.createInquiry()<br>
+GET    /api/inquiries/my           → InquiryController.getMyInquiries()→ InquiryService.getUserInquiries()<br>
+GET    /api/inquiries/warehouse/:id→ InquiryController.getForWarehouse()→ InquiryService.getWarehouseInquiries()<br>
+PATCH  /api/inquiries/:id/respond  → InquiryController.respond()      → InquiryService.respondToInquiry()<br>
+PATCH  /api/inquiries/:id/status   → InquiryController.updateStatus() → InquiryService.updateInquiryStatus()
+            </div>
+
+            <h3>📁 File Management Routes</h3>
+            <div class="api-route">
+POST   /api/upload/image           → FileController.uploadImage()     → FileService.processImageUpload()<br>
+POST   /api/upload/document        → FileController.uploadDocument()  → FileService.processDocumentUpload()<br>
+DELETE /api/files/:id              → FileController.deleteFile()     → FileService.deleteFile()<br>
+GET    /api/files/:id/download     → FileController.downloadFile()   → FileService.serveFile()
+            </div>
+
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🔗</span>Route Organization</h4>
+                    <ul>
+                        <li><strong>RESTful Design:</strong> HTTP verbs match actions</li>
+                        <li><strong>Versioning:</strong> /api/v1/ for future compatibility</li>
+                        <li><strong>Nested Resources:</strong> Parent/child relationships</li>
+                        <li><strong>Query Parameters:</strong> For filtering and pagination</li>
+                        <li><strong>Consistent Naming:</strong> kebab-case for URLs</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🛡️</span>Middleware Chain</h4>
+                    <ul>
+                        <li><strong>CORS:</strong> Applied to all routes</li>
+                        <li><strong>Rate Limiting:</strong> Per-IP and per-user limits</li>
+                        <li><strong>Authentication:</strong> JWT validation for protected routes</li>
+                        <li><strong>Authorization:</strong> Role-based access control</li>
+                        <li><strong>Validation:</strong> Input schema validation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" id="database-design">
+            <h2>💾 Database Design & ERD</h2>
+            
+            <div class="diagram">
+┌─────────────────────────┐         ┌─────────────────────────┐
+│         USERS           │         │      WAREHOUSES         │
+├─────────────────────────┤         ├─────────────────────────┤
+│ PK  id (INT)           │         │ PK  id (INT)           │
+│     email (VARCHAR)     │ 1    N  │ FK  user_id (INT)      │
+│     phone (VARCHAR)     │◀────────│     name (VARCHAR)      │
+│     password (VARCHAR)  │         │     description (TEXT)  │
+│     google_id (VARCHAR) │         │     address (TEXT)      │
+│     role (ENUM)        │         │     city (VARCHAR)      │
+│     first_name (VARCHAR)│         │     state (VARCHAR)     │
+│     last_name (VARCHAR) │         │     pincode (VARCHAR)   │
+│     verified (BOOLEAN)  │         │     area_sqft (INT)     │
+│     profile_image (VARCHAR)      │     price_per_sqft (DEC)│
+│     created_at (TIMESTAMP)       │     amenities (JSON)    │
+│     updated_at (TIMESTAMP)       │     images (JSON)       │
+│                        │         │     coordinates (POINT) │
+└───────────┬─────────────┘         │     status (ENUM)       │
+            │                       │     verified (BOOLEAN)  │
+            │                       │     verification_docs (JSON)
+            │                       │     created_at (TIMESTAMP)
+            │                       │     updated_at (TIMESTAMP)
+            │                       └───────────┬─────────────┘
+            │                                   │
+            │ 1                                 │ 1
+            │                                   │
+            │ N                                 │ N
+┌───────────▼─────────────┐         ┌───────────▼─────────────┐
+│       BOOKINGS          │         │    WAREHOUSE_ANALYTICS   │
+├─────────────────────────┤         ├─────────────────────────┤
+│ PK  id (INT)           │         │ PK  id (INT)           │
+│ FK  user_id (INT)      │         │ FK  warehouse_id (INT)  │
+│ FK  warehouse_id (INT)  │ 1    1  │     views_count (INT)   │
+│     start_date (DATE)   │◀────────│     inquiries_count (INT)│
+│     end_date (DATE)     │         │     bookings_count (INT)│
+│     total_amount (DEC)  │         │     revenue_total (DEC) │
+│     security_deposit (DEC)       │     avg_rating (FLOAT)  │
+│     status (ENUM)       │         │     last_booked_at (DATE)│
+│     booking_type (ENUM) │         │     performance_score (FLOAT)
+│     special_requirements (TEXT)  │     created_at (TIMESTAMP)
+│     created_at (TIMESTAMP)       │     updated_at (TIMESTAMP)
+│     updated_at (TIMESTAMP)       └─────────────────────────┘
+└───────────┬─────────────┘
+            │
+            │ 1
+            │
+            │ 1
+┌───────────▼─────────────┐         ┌─────────────────────────┐
+│       PAYMENTS          │         │       INQUIRIES         │
+├─────────────────────────┤         ├─────────────────────────┤
+│ PK  id (INT)           │         │ PK  id (INT)           │
+│ FK  booking_id (INT)    │         │ FK  user_id (INT)      │
+│     razorpay_order_id   │         │ FK  warehouse_id (INT)  │
+│     razorpay_payment_id │         │     subject (VARCHAR)   │
+│     amount (DECIMAL)    │         │     message (TEXT)      │
+│     currency (VARCHAR)  │         │     contact_email (VARCHAR)
+│     status (ENUM)       │         │     contact_phone (VARCHAR)
+│     payment_method (VARCHAR)     │     preferred_start_date (DATE)
+│     gateway_response (JSON)      │     duration_months (INT)│
+│     refund_amount (DECIMAL)      │     budget_range (VARCHAR)
+│     created_at (TIMESTAMP)       │     status (ENUM)       │
+│     updated_at (TIMESTAMP)       │     responded_at (TIMESTAMP)
+└─────────────────────────┘         │     response_text (TEXT)│
+                                    │     created_at (TIMESTAMP)
+                                    │     updated_at (TIMESTAMP)
+                                    └─────────────────────────┘
+
+┌─────────────────────────┐         ┌─────────────────────────┐
+│       USER_SESSIONS     │         │      AUDIT_LOGS         │
+├─────────────────────────┤         ├─────────────────────────┤
+│ PK  id (INT)           │         │ PK  id (INT)           │
+│ FK  user_id (INT)      │         │ FK  user_id (INT)      │
+│     session_token (VARCHAR)      │     action (VARCHAR)    │
+│     device_info (JSON)  │         │     table_name (VARCHAR)│
+│     ip_address (VARCHAR)│         │     record_id (INT)     │
+│     user_agent (TEXT)   │         │     old_values (JSON)   │
+│     expires_at (TIMESTAMP)       │     new_values (JSON)   │
+│     created_at (TIMESTAMP)       │     ip_address (VARCHAR)│
+└─────────────────────────┘         │     created_at (TIMESTAMP)
+                                    └─────────────────────────┘
+
+┌─────────────────────────┐         ┌─────────────────────────┐
+│    NOTIFICATIONS        │         │      REVIEWS            │
+├─────────────────────────┤         ├─────────────────────────┤
+│ PK  id (INT)           │         │ PK  id (INT)           │
+│ FK  user_id (INT)      │         │ FK  user_id (INT)      │
+│     type (ENUM)        │         │ FK  warehouse_id (INT)  │
+│     title (VARCHAR)     │         │ FK  booking_id (INT)    │
+│     message (TEXT)      │         │     rating (INT)        │
+│     data (JSON)         │         │     review_text (TEXT)  │
+│     read (BOOLEAN)      │         │     helpful_count (INT) │
+│     created_at (TIMESTAMP)       │     created_at (TIMESTAMP)
+└─────────────────────────┘         │     updated_at (TIMESTAMP)
+                                    └─────────────────────────┘
+            </div>
+
+            <h3>🔍 Advanced Database Features</h3>
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">⚡</span>Performance Optimizations</h4>
+                    <ul>
+                        <li><strong>Indexes:</strong> Composite indexes on search columns</li>
+                        <li><strong>Full-text Search:</strong> MySQL FULLTEXT on warehouse descriptions</li>
+                        <li><strong>Spatial Indexing:</strong> Geographic queries for location-based search</li>
+                        <li><strong>Partitioning:</strong> Bookings table partitioned by date</li>
+                        <li><strong>Query Optimization:</strong> EXPLAIN analysis for slow queries</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">🔒</span>Data Security</h4>
+                    <ul>
+                        <li><strong>Encryption:</strong> Sensitive fields encrypted at rest</li>
+                        <li><strong>PII Protection:</strong> User data pseudonymization</li>
+                        <li><strong>Backup Strategy:</strong> Daily automated backups</li>
+                        <li><strong>Access Control:</strong> Role-based database permissions</li>
+                        <li><strong>Audit Trail:</strong> All changes logged in audit_logs</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>📊 Key Database Constraints</h3>
+            <table>
+                <tr>
+                    <th>Table</th>
+                    <th>Constraint</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>users</td>
+                    <td>UNIQUE(email), UNIQUE(phone)</td>
+                    <td>Prevent duplicate accounts</td>
+                </tr>
+                <tr>
+                    <td>bookings</td>
+                    <td>CHECK(end_date > start_date)</td>
+                    <td>Validate booking dates</td>
+                </tr>
+                <tr>
+                    <td>warehouses</td>
+                    <td>CHECK(area_sqft > 0), CHECK(price_per_sqft > 0)</td>
+                    <td>Ensure positive values</td>
+                </tr>
+                <tr>
+                    <td>payments</td>
+                    <td>CHECK(amount > 0)</td>
+                    <td>Validate payment amounts</td>
+                </tr>
+                <tr>
+                    <td>reviews</td>
+                    <td>CHECK(rating BETWEEN 1 AND 5)</td>
+                    <td>Validate rating range</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" id="scalability-plan">
+            <h2>📈 Scalability Roadmap</h2>
+            
+            <div class="scalability-note">
+                <h3>🚀 Evolution Path: Monolith → Microservices</h3>
+                <p>Logic-i is designed as a modular monolith that can be gradually decomposed into microservices as scale demands increase.</p>
+            </div>
+
+            <h3>📊 Scaling Triggers & Metrics</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Current Capacity</th>
+                    <th>Scale Trigger</th>
+                    <th>Next Step</th>
+                </tr>
+                <tr>
+                    <td>Concurrent Users</td>
+                    <td>~1,000 users</td>
+                    <td>&gt; 5,000 users</td>
+                    <td>Load balancer + multiple instances</td>
+                </tr>
+                <tr>
+                    <td>Database Connections</td>
+                    <td>~100 connections</td>
+                    <td>&gt; 500 connections</td>
+                    <td>Read replicas + connection pooling</td>
+                </tr>
+                <tr>
+                    <td>API Requests</td>
+                    <td>~10,000 req/hour</td>
+                    <td>&gt; 100,000 req/hour</td>
+                    <td>Redis caching + CDN</td>
+                </tr>
+                <tr>
+                    <td>Storage</td>
+                    <td>~50GB (images + DB)</td>
+                    <td>&gt; 500GB</td>
+                    <td>Cloud storage (AWS S3/Azure Blob)</td>
+                </tr>
+                <tr>
+                    <td>Payment Volume</td>
+                    <td>~100 transactions/day</td>
+                    <td>&gt; 1,000 transactions/day</td>
+                    <td>Separate payment microservice</td>
+                </tr>
+            </table>
+
+            <h3>🏗️ Phase 1: Horizontal Scaling (6-12 months)</h3>
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">⚖️</span>Load Balancing</h4>
+                    <ul>
+                        <li><strong>NGINX Load Balancer:</strong> Round-robin across 3 app instances</li>
+                        <li><strong>Session Affinity:</strong> Redis session store</li>
+                        <li><strong>Health Checks:</strong> Automatic failover</li>
+                        <li><strong>Auto-scaling:</strong> PM2 cluster mode expansion</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">💾</span>Database Scaling</h4>
+                    <ul>
+                        <li><strong>Read Replicas:</strong> 2 read-only MySQL instances</li>
+                        <li><strong>Connection Pooling:</strong> PgBouncer for connection management</li>
+                        <li><strong>Query Optimization:</strong> Slow query analysis & indexing</li>
+                        <li><strong>Caching Layer:</strong> Redis for frequently accessed data</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">☁️</span>Cloud Migration</h4>
+                    <ul>
+                        <li><strong>CDN Integration:</strong> CloudFlare for static assets</li>
+                        <li><strong>Object Storage:</strong> AWS S3 for images/documents</li>
+                        <li><strong>Managed Database:</strong> AWS RDS or Azure Database</li>
+                        <li><strong>Container Deployment:</strong> Docker + Kubernetes</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>🔧 Phase 2: Microservices Decomposition (12-24 months)</h3>
+            <div class="diagram">
+Current Monolith → Target Microservices Architecture
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    API GATEWAY                                  │
+│                 (Kong/AWS API Gateway)                          │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+          ┌───────────────┼───────────────┐
+          │               │               │
+┌─────────▼─────────┐ ┌───▼────┐ ┌──────▼──────┐
+│   USER SERVICE    │ │ SEARCH │ │   PAYMENT   │
+│                   │ │SERVICE │ │   SERVICE   │
+│ • Authentication  │ │        │ │             │
+│ • User profiles   │ │• Warehouse│ │• Razorpay  │
+│ • Sessions        │ │  search  │ │• Refunds   │
+│ • JWT management  │ │• Filters │ │• Invoices  │
+└─────────┬─────────┘ │• Geolocation │ └──────┬──────┘
+          │           └────────┘            │
+          │                                 │
+┌─────────▼─────────┐ ┌──────────────┐ ┌───▼────────────┐
+│ WAREHOUSE SERVICE │ │BOOKING SERVICE│ │NOTIFICATION    │
+│                   │ │              │ │   SERVICE      │
+│ • Listings CRUD   │ │• Reservations│ │                │
+│ • Image uploads   │ │• Availability│ │• Email/SMS     │
+│ • Verification    │ │• Conflicts   │ │• Push notifs   │
+│ • Analytics       │ │• Extensions  │ │• Templates     │
+└───────────────────┘ └──────────────┘ └────────────────┘
+            </div>
+
+            <h3>⚡ Phase 3: Advanced Scaling (24+ months)</h3>
+            <div class="flow-step">
+                <h4>Enterprise-Grade Features</h4>
+                <ul>
+                    <li><strong>Event Sourcing:</strong> Complete audit trail with event replay capability</li>
+                    <li><strong>CQRS Pattern:</strong> Separate read/write models for optimal performance</li>
+                    <li><strong>Message Queues:</strong> RabbitMQ/Apache Kafka for async processing</li>
+                    <li><strong>Machine Learning:</strong> Recommendation engine for warehouse matching</li>
+                    <li><strong>Real-time Features:</strong> WebSocket for live booking notifications</li>
+                    <li><strong>Multi-region:</strong> Geographic distribution for global users</li>
+                    <li><strong>Analytics Platform:</strong> Data warehouse with business intelligence</li>
+                </ul>
+            </div>
+
+            <h3>💰 Cost Optimization Strategy</h3>
+            <div class="architecture-grid">
+                <div class="architecture-card">
+                    <h4><span class="card-icon">💵</span>Current Costs (Monthly)</h4>
+                    <ul>
+                        <li><strong>VPS Server:</strong> ₹3,000 ($35)</li>
+                        <li><strong>Domain + SSL:</strong> ₹500 ($6)</li>
+                        <li><strong>CDN:</strong> ₹800 ($10)</li>
+                        <li><strong>Monitoring:</strong> ₹400 ($5)</li>
+                        <li><strong>Total:</strong> ₹4,700 ($56/month)</li>
+                    </ul>
+                </div>
+                
+                <div class="architecture-card">
+                    <h4><span class="card-icon">📈</span>Scaled Costs (Monthly)</h4>
+                    <ul>
+                        <li><strong>Cloud Infrastructure:</strong> ₹25,000 ($300)</li>
+                        <li><strong>Managed Database:</strong> ₹8,000 ($95)</li>
+                        <li><strong>CDN + Storage:</strong> ₹4,000 ($50)</li>
+                        <li><strong>Monitoring + Logs:</strong> ₹2,000 ($25)</li>
+                        <li><strong>Total:</strong> ₹39,000 ($470/month)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box">
+                <h4>🎯 Success Metrics for Scaling</h4>
+                <ul>
+                    <li><strong>Response Time:</strong> &lt; 200ms for 95% of API requests</li>
+                    <li><strong>Uptime:</strong> 99.9% availability (8.76 hours downtime/year)</li>
+                    <li><strong>Scalability:</strong> Handle 10x traffic increase without architecture changes</li>
+                    <li><strong>Cost Efficiency:</strong> Infrastructure cost &lt; 15% of revenue</li>
+                    <li><strong>Developer Productivity:</strong> New features deployed within 1 week</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

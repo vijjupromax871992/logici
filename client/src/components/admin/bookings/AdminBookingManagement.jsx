@@ -562,8 +562,8 @@ const AdminBookingManagement = () => {
 
       {/* Enhanced Booking Details Modal */}
       {showModal && selectedBooking && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto" style={{ backgroundColor: theme.cardBg }}>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+          <div className="rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto" style={{ backgroundColor: theme.cardBg || theme.background || '#ffffff', border: `2px solid ${theme.cardBorder || '#e5e7eb'}`, boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)' }}>
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-3">
                 <h3 className="text-xl font-semibold" style={{ color: theme.textPrimary }}>Booking Details</h3>
@@ -634,14 +634,14 @@ const AdminBookingManagement = () => {
                   {selectedBooking.warehouse && (
                     <div>
                       <h5 className="font-medium mb-2" style={{ color: theme.textPrimary }}>Warehouse Information</h5>
-                      <div className="p-3 rounded-lg space-y-1 text-sm" style={{ backgroundColor: theme.surface }}>
-                        <p className="font-medium" style={{ color: theme.textPrimary }}>{selectedBooking.warehouse.name}</p>
+                      <div className="p-4 rounded-lg space-y-2 text-sm" style={{ backgroundColor: theme.surface || theme.cardBg || 'rgba(255, 255, 255, 0.95)', border: `2px solid ${theme.cardBorder || '#e5e7eb'}`, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+                        <p className="font-medium" style={{ color: theme.textPrimary || '#1f2937' }}>{selectedBooking.warehouse.name}</p>
                         {selectedBooking.warehouse.address && (
-                          <p style={{ color: theme.textPrimary }}>{selectedBooking.warehouse.address}</p>
+                          <p style={{ color: theme.textPrimary || '#1f2937' }}>{selectedBooking.warehouse.address}</p>
                         )}
-                        <p style={{ color: theme.textPrimary }}>{selectedBooking.warehouse.city}, {selectedBooking.warehouse.state}</p>
+                        <p style={{ color: theme.textPrimary || '#1f2937' }}>{selectedBooking.warehouse.city}, {selectedBooking.warehouse.state}</p>
                         {selectedBooking.warehouse.warehouse_type && (
-                          <p style={{ color: theme.textSecondary }}>Type: {selectedBooking.warehouse.warehouse_type}</p>
+                          <p style={{ color: theme.textSecondary || '#6b7280' }}>Type: {selectedBooking.warehouse.warehouse_type}</p>
                         )}
                       </div>
                     </div>
@@ -650,11 +650,11 @@ const AdminBookingManagement = () => {
                   {selectedBooking.owner && (
                     <div>
                       <h5 className="font-medium mb-2" style={{ color: theme.textPrimary }}>Warehouse Owner</h5>
-                      <div className="p-3 rounded-lg space-y-1 text-sm" style={{ backgroundColor: theme.surface }}>
-                        <p style={{ color: theme.textPrimary }}>{selectedBooking.owner.firstName} {selectedBooking.owner.lastName}</p>
-                        <p style={{ color: theme.textPrimary }}>{selectedBooking.owner.email}</p>
+                      <div className="p-4 rounded-lg space-y-2 text-sm" style={{ backgroundColor: theme.surface || theme.cardBg || 'rgba(255, 255, 255, 0.95)', border: `2px solid ${theme.cardBorder || '#e5e7eb'}`, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+                        <p style={{ color: theme.textPrimary || '#1f2937' }}>{selectedBooking.owner.firstName} {selectedBooking.owner.lastName}</p>
+                        <p style={{ color: theme.textPrimary || '#1f2937' }}>{selectedBooking.owner.email}</p>
                         {selectedBooking.owner.mobileNumber && (
-                          <p style={{ color: theme.textPrimary }}>{selectedBooking.owner.mobileNumber}</p>
+                          <p style={{ color: theme.textPrimary || '#1f2937' }}>{selectedBooking.owner.mobileNumber}</p>
                         )}
                       </div>
                     </div>
@@ -665,7 +665,7 @@ const AdminBookingManagement = () => {
               {selectedBooking.message && (
                 <div>
                   <h5 className="font-medium mb-3" style={{ color: theme.textPrimary }}>Complete Message</h5>
-                  <div className="p-4 rounded-lg whitespace-pre-wrap break-words leading-relaxed" style={{ backgroundColor: theme.surface, color: theme.textPrimary }}>
+                  <div className="p-4 rounded-lg whitespace-pre-wrap break-words leading-relaxed" style={{ backgroundColor: theme.surface || theme.cardBg || 'rgba(255, 255, 255, 0.95)', color: theme.textPrimary || '#1f2937', border: `2px solid ${theme.cardBorder || '#e5e7eb'}`, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', minHeight: '60px' }}>
                     {formatMessage(selectedBooking.message)}
                   </div>
                 </div>

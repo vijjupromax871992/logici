@@ -11,5 +11,6 @@ router.post('/api/public/bookings', bookingController.createBooking);
 router.get('/api/bookings', verifyAccessToken, bookingController.getOwnerBookings);
 router.put('/api/bookings/:id/status', verifyAccessToken, bookingController.updateBookingStatus);
 router.get('/api/bookings/stats', verifyAccessToken, bookingController.getBookingStats);
+router.get('/api/bookings/dashboard/stats', verifyAccessToken, bookingController.getBookingStats);
 
 module.exports = router;

@@ -5,37 +5,106 @@ const OTP = require("../../models/Otp");
 const RegisterOTP = require("../../models/RegisterOtp");
 const { generateToken } = require("../../utils/jwt");
 const nodemailer = require("nodemailer");
-const { sendSMS } = require("../services/sns.service");
+// SMS service removed - using email only
 require("dotenv").config({ path: "../../.env" });
 const { Sequelize } = require("sequelize");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const otpController = require("../../controllers/otpController");
 
-// Create transporter for sending emails using Gmail
+// Create transporter for sending emails with Zoho
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
+  host: "smtp.zoho.in",
   port: 587,
-  secure: false,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSKEY,
+  },
+  tls: {
+    rejectUnauthorized: false
   },
   debug: true, // Enable debug logging
 });
 
 // Function to send email OTP
-async function sendEmailOTP(email, otp) {
+async function sendEmailOTP(email, otp, subject = "Your OTP") {
   try {
+    // Check if in development mode or email is not properly configured
+    if (process.env.NODE_ENV === 'development' || process.env.SKIP_EMAIL === 'true') {
+      console.log("===============================================");
+      console.log("EMAIL OTP (Development Mode)");
+      console.log("To:", email);
+      console.log("Subject:", subject);
+      console.log("OTP Code:", otp);
+      console.log("===============================================");
+      return; // Skip actual email sending in development
+    }
+    
+    const htmlTemplate = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Your OTP</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f5f5f5; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #00599c, #dbb269); color: white; padding: 30px 20px; text-align: center; }
+            .header h1 { margin: 0; font-size: 28px; font-weight: 600; }
+            .content { padding: 40px 30px; text-align: center; }
+            .otp-box { background: #f8f9fa; border: 2px dashed #00599c; border-radius: 10px; padding: 25px; margin: 30px 0; }
+            .otp-code { font-size: 36px; font-weight: bold; color: #00599c; letter-spacing: 5px; margin: 10px 0; }
+            .info { color: #666; margin: 20px 0; line-height: 1.6; }
+            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+            .logo { color: #00599c; font-weight: bold; font-size: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🔐 Verification Code</h1>
+                <p>Welcome to Logic-i</p>
+            </div>
+            <div class="content">
+                <h2>Your Registration OTP</h2>
+                <p class="info">Please use the following One-Time Password (OTP) to complete your registration:</p>
+                
+                <div class="otp-box">
+                    <div class="otp-code">${otp}</div>
+                </div>
+                
+                <p class="info">
+                    <strong>⏰ This OTP will expire in 5 minutes</strong><br>
+                    For security reasons, please do not share this code with anyone.
+                </p>
+                
+                <p class="info">
+                    If you didn't request this OTP, please ignore this email.
+                </p>
+            </div>
+            <div class="footer">
+                <div class="logo">Logic-i</div>
+                <p>© 2025 Logic-i.com. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"Logic-i Support" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Login OTP",
-      text: `Your OTP for login is: ${otp}`,
+      subject: subject,
+      text: `Your OTP for Logic-i registration is: ${otp}. This code will expire in 5 minutes. Do not share this code with anyone.`,
+      html: htmlTemplate,
     });
   } catch (error) {
-
+    console.error("Error sending email:", error);
+    // In production, log the error but don't fail the OTP process
+    if (process.env.NODE_ENV === 'production') {
+      console.error("Failed to send email, but OTP was generated:", otp);
+    }
     throw error;
   }
 }
@@ -135,7 +204,10 @@ exports.sendOTP = async (req, res) => {
     if (type === "email") {
       await sendEmailOTP(value, otp);
     } else if (type === "mobile") {
-      await sendSMS(value, `Your OTP is: ${otp}`);
+      return res.status(400).json({
+        success: false,
+        message: "Mobile OTP is not supported. Please use email.",
+      });
     }
 
     // Store OTP
@@ -365,6 +437,8 @@ exports.resetPassword = async (req, res) => {
 exports.sendRegistrationOTP = async (req, res) => {
   try {
     const { type, value } = req.body;
+    console.log("sendRegistrationOTP called with:", { type, value });
+    
     // First check if user already exists
     const existingUser = await User.findOne({ where: { [type]: value } });
     if (existingUser) {
@@ -392,9 +466,13 @@ exports.sendRegistrationOTP = async (req, res) => {
 
     // Send OTP via email or SMS
     if (type === "email") {
-      await sendEmailOTP(value, otp); // send email OTP helper
+      console.log("Sending email OTP to:", value);
+      await sendEmailOTP(value, otp, "Your Registration OTP"); // send email OTP helper
     } else if (type === "mobileNumber") {
-      await sendSMS(value, `Your OTP is: ${otp}`); // send SMS OTP helper
+      return res.status(400).json({
+        success: false,
+        error: "Mobile OTP is not supported. Please use email.",
+      });
     }
 
     // Store OTP in registration_otps table
@@ -410,9 +488,11 @@ exports.sendRegistrationOTP = async (req, res) => {
       message: `OTP sent successfully to ${value}`,
     });
   } catch (error) {
+    console.error("Error in sendRegistrationOTP:", error);
     return res.status(500).json({
       success: false,
       error: "Failed to send OTP",
+      details: error.message
     });
   }
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RangeSlider from '../RangeSlider/RangeSlider';
 import SearchBar from '../../../SearchBar/SearchBar';
 
@@ -21,7 +21,14 @@ const WarehouseFilterBar: React.FC<WarehouseFilterBarProps> = ({
   const [sizeRange, setSizeRange] = useState<[number, number]>([500, 20000]);
   const [budgetRange, setBudgetRange] = useState<[number, number]>([10, 100]);
   const [storageType, setStorageType] = useState<string>('');
-  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchValue, setSearchValue] = useState<string>(searchQuery || '');
+
+  // Sync searchValue when searchQuery prop changes
+  useEffect(() => {
+    if (searchQuery !== undefined) {
+      setSearchValue(searchQuery);
+    }
+  }, [searchQuery]);
 
   const handleApplyFilters = () => {
     try {

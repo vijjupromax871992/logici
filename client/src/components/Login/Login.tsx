@@ -57,8 +57,17 @@ const Login: React.FC<LoginProps> = ({ onClose, onShowRegister }) => {
       if (response.success && response.data) {
         const user = authService.getCurrentUser();
         if (user) {
-          const dashboardPath = authService.getDashboardPath(user.isAdmin);
-          navigate(dashboardPath);
+          // Check if there's a stored redirect URL
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            // Clear the stored URL and redirect there
+            sessionStorage.removeItem('redirectAfterLogin');
+            navigate(redirectUrl);
+          } else {
+            // Default behavior - go to dashboard
+            const dashboardPath = authService.getDashboardPath(user.isAdmin);
+            navigate(dashboardPath);
+          }
           onClose();
         }
       } else {

@@ -19,12 +19,17 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const showRegister = params.get('showRegister');
+    const showLogin = params.get('showLogin');
     const googleEmail = params.get('googleEmail');
 
     if (showRegister === 'true' && googleEmail) {
       navigate('/', { replace: true });
       alert(`${googleEmail} is not yet registered, kindly register.`);
       setShowRegister(true);
+    } else if (showLogin === 'true') {
+      // Auto-open login form when redirected from protected route
+      navigate('/', { replace: true });
+      setShowLogin(true);
     }
   }, [location]);
 

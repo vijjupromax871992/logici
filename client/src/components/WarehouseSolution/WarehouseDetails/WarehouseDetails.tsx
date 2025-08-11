@@ -78,16 +78,17 @@ const WarehouseDetails: React.FC = () => {
 
       // Handle array format
       if (Array.isArray(images)) {
-        return images.filter(Boolean).map((img) => {
+        const processedImages = images.filter(Boolean).map((img) => {
           if (typeof img !== 'string') return `${baseUrl}/uploads/default.jpg`;
           if (img.startsWith('http')) return img;
           return `${baseUrl}/${img}`;
         });
+        return processedImages.length > 0 ? processedImages : [`${baseUrl}/uploads/default.jpg`];
       }
 
       // Handle string format (comma-separated)
       if (typeof images === 'string') {
-        return images
+        const processedImages = images
           .split(',')
           .map((img) => img.trim())
           .filter(Boolean)
@@ -95,6 +96,7 @@ const WarehouseDetails: React.FC = () => {
             if (img.startsWith('http')) return img;
             return `${baseUrl}/${img}`;
           });
+        return processedImages.length > 0 ? processedImages : [`${baseUrl}/uploads/default.jpg`];
       }
 
       // Fallback for any other format
@@ -473,7 +475,7 @@ const WarehouseDetails: React.FC = () => {
         <div className="lg:col-span-2 space-y-6 lg:space-y-8">
           {/* Image Gallery */}
           <div className="bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-lg">
-            {images && images.length > 0 ? (
+            {images && Array.isArray(images) && images.length > 0 ? (
               <Slider {...sliderSettings}>
                 {images.map((image, index) => (
                   <div key={index}>

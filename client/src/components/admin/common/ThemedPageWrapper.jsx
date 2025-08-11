@@ -6,14 +6,14 @@ const ThemedPageWrapper = ({ children, title, subtitle }) => {
 
   return (
     <div className="min-h-screen transition-all duration-300" style={{ background: theme.background }}>
-      <div className="p-6">
+      <div className="p-3 sm:p-4 md:p-6">
         {title && (
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2" style={{ color: theme.textPrimary }}>
+          <div className="mb-4 sm:mb-6 md:mb-8">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2" style={{ color: theme.textPrimary }}>
               {title}
             </h1>
             {subtitle && (
-              <p style={{ color: theme.textSecondary }}>
+              <p className="text-sm sm:text-base" style={{ color: theme.textSecondary }}>
                 {subtitle}
               </p>
             )}

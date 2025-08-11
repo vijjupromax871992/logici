@@ -20,8 +20,8 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
-  sendOTP: (type: 'email' | 'mobile', value: string) => Promise<any>;
-  verifyOTP: (type: 'email' | 'mobile', value: string, otp: string) => Promise<any>;
+  sendOTP: (type: 'email', value: string) => Promise<any>;
+  verifyOTP: (type: 'email', value: string, otp: string) => Promise<any>;
   googleAuth: () => void;
 }
 
@@ -65,12 +65,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const sendOTP = async (type: 'email' | 'mobile', value: string) => {
+  const sendOTP = async (type: 'email', value: string) => {
+    // Mobile OTP removed - only email OTP supported
+    if (type !== 'email') {
+      throw new Error('Only email OTP is supported');
+    }
     const response = await axios.post(`${API_URL}/api/auth/send-otp`, { type, value });
     return response.data;
   };
 
-  const verifyOTP = async (type: 'email' | 'mobile', value: string, otp: string) => {
+  const verifyOTP = async (type: 'email', value: string, otp: string) => {
+    // Mobile OTP removed - only email OTP supported  
+    if (type !== 'email') {
+      throw new Error('Only email OTP is supported');
+    }
     const response = await axios.post(`${API_URL}/api/auth/verify-otp`, { type, value, otp });
     return response.data;
   };

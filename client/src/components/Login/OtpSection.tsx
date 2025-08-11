@@ -155,11 +155,20 @@ const OtpSection: React.FC<OtpSectionProps> = ({ onClose }) => {
         localStorage.setItem('user', JSON.stringify(data.data.user));
 
         setTimeout(() => {
-          const user = JSON.parse(localStorage.getItem('user') || '{}');
-          if (user.isAdmin) {
-            window.location.href = '/admin/dashboard';
+          // Check if there's a stored redirect URL
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+          if (redirectUrl) {
+            // Clear the stored URL and redirect there
+            sessionStorage.removeItem('redirectAfterLogin');
+            window.location.href = redirectUrl;
           } else {
-            window.location.href = '/user/dashboard';
+            // Default behavior - go to dashboard
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.isAdmin) {
+              window.location.href = '/admin/dashboard';
+            } else {
+              window.location.href = '/user/dashboard';
+            }
           }
         }, 500);
       } else {

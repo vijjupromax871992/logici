@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Activity, Users, Archive, Clock, MessageSquare, HelpCircle } from 'lucide-react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../../../config/api';
 import { useTheme } from '../../../contexts/ThemeContext';
 import ThemeToggle from '../../theme/ThemeToggle';
@@ -54,6 +55,7 @@ InfoTooltip.propTypes = {
 
 const AdminDashboard = () => {
   const { theme, isLightTheme } = useTheme();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dashboardData, setDashboardData] = useState({
@@ -65,6 +67,14 @@ const AdminDashboard = () => {
     pendingInquiries: 0
   });
   const [user, setUser] = useState({ firstName: 'Admin' });
+
+  // Navigation handlers for stat cards
+  const handleNavigateToUsers = () => navigate('/admin/users');
+  const handleNavigateToWarehouses = () => navigate('/admin/warehouses');
+  const handleNavigateToBookings = () => navigate('/admin/bookings');
+  const handleNavigateToPendingApprovals = () => navigate('/admin/warehouses/pending');
+  const handleNavigateToInquiries = () => navigate('/admin/inquiries');
+  const handleNavigateToPendingInquiries = () => navigate('/admin/inquiries?status=pending');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -99,8 +109,9 @@ const AdminDashboard = () => {
           // Handle specific authentication errors
           if (response.status === 401 || response.status === 403) {
             localStorage.removeItem('token');
+            localStorage.removeItem('auth_token');
             localStorage.removeItem('user');
-            window.location.href = '/admin/login';
+            window.location.href = '/';
             return;
           }
           throw new Error(result.message || 'Failed to fetch dashboard data');
@@ -185,14 +196,16 @@ const AdminDashboard = () => {
       value: dashboardData.totalUsers,
       icon: Users,
       color: isLightTheme ? '#3b82f6' : '#06b6d4',
-      bgColor: isLightTheme ? 'rgba(59, 130, 246, 0.1)' : 'rgba(6, 182, 212, 0.15)'
+      bgColor: isLightTheme ? 'rgba(59, 130, 246, 0.1)' : 'rgba(6, 182, 212, 0.15)',
+      onClick: handleNavigateToUsers
     },
     {
       title: "TOTAL WAREHOUSES",
       value: dashboardData.totalWarehouses,
       icon: Archive,
       color: isLightTheme ? '#10b981' : '#34d399',
-      bgColor: isLightTheme ? 'rgba(16, 185, 129, 0.1)' : 'rgba(52, 211, 153, 0.15)'
+      bgColor: isLightTheme ? 'rgba(16, 185, 129, 0.1)' : 'rgba(52, 211, 153, 0.15)',
+      onClick: handleNavigateToWarehouses
     },
     {
       title: "TOTAL BOOKINGS",
@@ -200,14 +213,16 @@ const AdminDashboard = () => {
       icon: Activity,
       color: isLightTheme ? '#f59e0b' : '#fbbf24',
       bgColor: isLightTheme ? 'rgba(245, 158, 11, 0.1)' : 'rgba(251, 191, 36, 0.15)',
-      tooltip: bookingTooltipContent
+      tooltip: bookingTooltipContent,
+      onClick: handleNavigateToBookings
     },
     {
       title: "PENDING APPROVALS",
       value: dashboardData.pendingApprovals,
       icon: Clock,
       color: isLightTheme ? '#ef4444' : '#f87171',
-      bgColor: isLightTheme ? 'rgba(239, 68, 68, 0.1)' : 'rgba(248, 113, 113, 0.15)'
+      bgColor: isLightTheme ? 'rgba(239, 68, 68, 0.1)' : 'rgba(248, 113, 113, 0.15)',
+      onClick: handleNavigateToPendingApprovals
     },
     {
       title: "TOTAL INQUIRIES",
@@ -215,7 +230,8 @@ const AdminDashboard = () => {
       icon: MessageSquare,
       color: isLightTheme ? '#8b5cf6' : '#a78bfa',
       bgColor: isLightTheme ? 'rgba(139, 92, 246, 0.1)' : 'rgba(167, 139, 250, 0.15)',
-      tooltip: inquiryTooltipContent
+      tooltip: inquiryTooltipContent,
+      onClick: handleNavigateToInquiries
     },
     {
       title: "PENDING INQUIRIES",
@@ -223,7 +239,8 @@ const AdminDashboard = () => {
       icon: MessageSquare,
       color: isLightTheme ? '#06b6d4' : '#22d3ee',
       bgColor: isLightTheme ? 'rgba(6, 182, 212, 0.1)' : 'rgba(34, 211, 238, 0.15)',
-      tooltip: inquiryTooltipContent
+      tooltip: inquiryTooltipContent,
+      onClick: handleNavigateToPendingInquiries
     }
   ];
 
@@ -301,6 +318,7 @@ const AdminDashboard = () => {
               boxShadow: theme.cardShadow,
               backdropFilter: theme.glassBlur
             }}
+            onClick={stat.onClick}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = theme.statsHover;
               e.currentTarget.style.boxShadow = theme.cardHoverShadow;

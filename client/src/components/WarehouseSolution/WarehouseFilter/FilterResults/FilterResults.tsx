@@ -42,6 +42,11 @@ const FilterResults: React.FC<FilterResultsProps> = ({
         limit: rowsPerPage,
       };
 
+      // If fetchAll is true, use larger limit to get all warehouses
+      if (filters.fetchAll) {
+        params.limit = 1000;
+      }
+
       // Add location filter
       if (filters.location) {
         params.location = filters.location;
@@ -49,14 +54,12 @@ const FilterResults: React.FC<FilterResultsProps> = ({
 
       // Add size range filter
       if (filters.sizeRange && Array.isArray(filters.sizeRange) && filters.sizeRange.length === 2) {
-        params.min_size = filters.sizeRange[0];
-        params.max_size = filters.sizeRange[1];
+        params.sizeRange = `${filters.sizeRange[0]},${filters.sizeRange[1]}`;
       }
 
       // Add budget range filter
       if (filters.budgetRange && Array.isArray(filters.budgetRange) && filters.budgetRange.length === 2) {
-        params.min_rent = filters.budgetRange[0];
-        params.max_rent = filters.budgetRange[1];
+        params.budgetRange = `${filters.budgetRange[0]},${filters.budgetRange[1]}`;
       }
 
       // Add storage type filter
@@ -192,13 +195,27 @@ const FilterResults: React.FC<FilterResultsProps> = ({
                       <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-gray-100">
                         {warehouse.images ? (
                           <img
-                            src={
-                              typeof warehouse.images === 'string' 
-                                ? `${baseUrl}/${warehouse.images.split(',')[0].trim()}`
-                                : Array.isArray(warehouse.images) && warehouse.images.length > 0
-                                  ? `${baseUrl}/${warehouse.images[0]}`
-                                  : `${baseUrl}/uploads/default.jpg`
-                            }
+                            src={(() => {
+                              let imagePath = '';
+                              if (typeof warehouse.images === 'string') {
+                                imagePath = warehouse.images.split(',')[0].trim();
+                              } else if (Array.isArray(warehouse.images) && warehouse.images.length > 0) {
+                                imagePath = warehouse.images[0];
+                              }
+                              
+                              if (!imagePath) {
+                                return `${baseUrl}/uploads/default.jpg`;
+                              }
+                              
+                              // Check if it's already a full URL
+                              if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+                                return imagePath;
+                              }
+                              
+                              // Remove leading slash if present
+                              imagePath = imagePath.replace(/^\//, '');
+                              return `${baseUrl}/${imagePath}`;
+                            })()}
                             alt={`${warehouse.name || 'Warehouse'}`}
                             className="absolute inset-0 w-full h-full object-cover"
                             onError={(e) => {

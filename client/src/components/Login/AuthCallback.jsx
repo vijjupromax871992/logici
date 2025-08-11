@@ -55,8 +55,13 @@ const AuthCallback = () => {
         console.log('🔍 [AuthCallback] localStorage token:', localStorage.getItem('token'));
         console.log('🔍 [AuthCallback] localStorage user:', localStorage.getItem('user'));
         
-        // Use the redirectPath from the URL if available
-        if (redirectPath) {
+        // Check for stored redirect URL first, then URL parameter
+        const storedRedirect = sessionStorage.getItem('redirectAfterLogin');
+        if (storedRedirect) {
+          console.log('✅ [AuthCallback] Redirecting to stored path:', storedRedirect);
+          sessionStorage.removeItem('redirectAfterLogin');
+          window.location.replace(storedRedirect);
+        } else if (redirectPath) {
           console.log('✅ [AuthCallback] Redirecting to specified path:', redirectPath);
           window.location.replace(redirectPath);
         } else {

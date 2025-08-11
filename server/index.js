@@ -96,8 +96,9 @@ app.use(morgan('dev'));
 // For webhook route, we need raw body
 app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 
-// For all other routes, use JSON middleware
-app.use(express.json());
+// For all other routes, use JSON middleware with increased size limits
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Routes
 app.use(healthRoutes);
@@ -169,9 +170,28 @@ app.use('/admin', adminRoutes);
 app.use('/api', analyticsRoutes);
 
 app.use((err, req, res, next) => {
-  res.status(500).json({
+  // Handle specific errors
+  if (err.status === 413 || err.code === 'LIMIT_FILE_SIZE' || err.type === 'entity.too.large') {
+    return res.status(413).json({
+      success: false,
+      message: 'Request entity too large. Please reduce file size or data payload.',
+      error: process.env.NODE_ENV === 'development' ? err.message : 'File size exceeds limit'
+    });
+  }
+  
+  if (err.status === 400 && err.type === 'entity.parse.failed') {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid JSON format in request',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+
+  // Generic error handler
+  const status = err.status || 500;
+  res.status(status).json({
     success: false,
-    message: 'Something went wrong!',
+    message: err.status === 500 ? 'Something went wrong!' : err.message,
     error: process.env.NODE_ENV === 'development' ? err.message : undefined,
   });
 });
